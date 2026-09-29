@@ -7,7 +7,7 @@
   <script src="/_sdk/ddcab3e45959c817.resizing_sdk.js" type="text/javascript" integrity="sha512-VAviUKfZVzugWBSeULYjSljTX+nb84wc6Zzbx5GQaQgh6X2ISSjXi8eIiCDGdwDh10esJMY0+QFQgUy9NcrTlQ=="></script>
   <script type="module">
     import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, setPersistence, browserLocalPersistence } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
     import { getDatabase, ref, get, set, onValue, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js';
 
     const FIREBASE_CONFIG = {
@@ -63,60 +63,37 @@
       if (index >= 0) queue[index] = queued; else queue.push(queued);
       try { localStorage.setItem(pendingStorageKey, JSON.stringify(queue)); firebaseStatus.pending = queue.length; window.dispatchEvent(new CustomEvent('tirtakala-firebase-status', { detail: getFirebaseStatus() })); return true; } catch (error) { setFirebaseStatus('error', 'Antrean sinkronisasi lokal tidak dapat disimpan'); return false; }
     };
-    let activeFirebaseListeners = [];
-    let activeFirebaseScope = '';
     window.addEventListener('tirtakala-firebase-auth', async event => {
-      activeFirebaseListeners.forEach(unsubscribe => { try { unsubscribe(); } catch (error) {} });
-      activeFirebaseListeners = [];
-      activeFirebaseScope = '';
       const detail = event.detail;
-      if (!detail?.uid || !detail.profile || !firebaseDatabase) { setFirebaseStatus('waiting', 'Menunggu login dan profil terverifikasi'); return; }
+      if (!detail?.uid || !detail.profile) return;
       const profile = detail.profile;
-      const tokenResult = await detail.user?.getIdTokenResult?.().catch(() => null);
-      const claims = tokenResult?.claims || {};
-      const roleValue = claims.role || profile.role || '';
-      const roleKey = String(roleValue).trim().toLocaleLowerCase('id-ID').replace(/[\s-]+/g, '_');
-      const role = ['admin_wilayah', 'adminwilayah'].includes(roleKey) ? 'Admin Wilayah' : roleValue;
-      const assignedRegion = claims.regionId || profile.regionId;
-      const regionIds = role === 'Super Admin' ? Object.keys(profile.regions || {}) : Array.isArray(profile.regionIds) ? profile.regionIds : assignedRegion ? [assignedRegion] : [];
-      if (!['Super Admin', 'Admin Wilayah', 'Petugas Meter', 'Bendahara'].includes(role) || (role !== 'Super Admin' && (!assignedRegion || !regionIds.includes(assignedRegion)))) { setFirebaseStatus('waiting', 'Menunggu verifikasi peran dan wilayah'); return; }
+      const role = profile.role;
+      const regionIds = role === 'Super Admin' ? Object.keys(profile.regions || {}) : Array.isArray(profile.regionIds) ? profile.regionIds : profile.regionId ? [profile.regionId] : [];
+      if (!['Super Admin', 'Admin Wilayah', 'Petugas Meter', 'Bendahara'].includes(role) || (role !== 'Super Admin' && !regionIds.length)) { setFirebaseStatus('waiting', 'Menunggu verifikasi peran dan wilayah'); return; }
       const permittedCollections = role === 'Petugas Meter' ? ['meters'] : role === 'Bendahara' ? ['payments', 'income', 'expenses', 'reports'] : ['customers', 'meters', 'bills', 'payments', 'arrears', 'income', 'expenses', 'reports', 'areas'];
-      const scope = `${detail.uid}|${role}|${regionIds.slice().sort().join(',')}`;
-      if (scope === activeFirebaseScope) return;
-      activeFirebaseScope = scope;
       for (const regionId of regionIds) for (const collection of permittedCollections) {
-        const unsubscribe = onValue(ref(firebaseDatabase, `appData/${detail.uid}/regions/${regionId}/${collection}`), snapshot => {
+        onValue(ref(firebaseDatabase, `appData/${detail.uid}/regions/${regionId}/${collection}`), snapshot => {
           window.dispatchEvent(new CustomEvent('tirtakala-firebase-data', { detail: { regionId, collection, value: snapshot.val() || {} } }));
         }, error => setFirebaseStatus(error?.code === 'PERMISSION_DENIED' ? 'error' : 'offline', 'Data wilayah belum dapat dibaca; periksa Rules Firebase.'));
-        if (typeof unsubscribe === 'function') activeFirebaseListeners.push(unsubscribe);
       }
-      window.dispatchEvent(new CustomEvent('tirtakala-firebase-diagnostics', { detail: { stage: 'listeners-active', role, regionIds, listenerCount: activeFirebaseListeners.length } }));
     });
     const getFirebaseStatus = () => ({ ...firebaseStatus, user: firebaseUser ? { uid: firebaseUser.uid, email: firebaseUser.email || '' } : null });
     async function initializeFirebase() {
       try {
         firebaseAppSingleton = getApps().length ? getApps()[0] : initializeApp(FIREBASE_CONFIG);
         firebaseAuth = getAuth(firebaseAppSingleton);
-        try { await setPersistence(firebaseAuth, browserLocalPersistence); } catch (error) { setFirebaseStatus('offline', 'Sesi aman belum dapat dipulihkan pada browser ini'); }
         firebaseDatabase = getDatabase(firebaseAppSingleton);
-        onValue(ref(firebaseDatabase, '.info/connected'), snapshot => {
-          if (snapshot.val() !== true) { setFirebaseStatus('offline', 'Koneksi Realtime Database terputus'); return; }
-          if (!firebaseUser || !firebaseProfile) { setFirebaseStatus('waiting', 'Menunggu autentikasi dan profil'); return; }
-          testFirebaseConnection();
-        }, () => setFirebaseStatus('offline', 'Status koneksi database belum dapat dibaca'));
         setFirebaseStatus('waiting', 'Menunggu autentikasi');
         onAuthStateChanged(firebaseAuth, async user => {
           firebaseUser = user;
           firebaseProfile = null;
           if (!user) { setFirebaseStatus('waiting', 'Menunggu autentikasi'); window.dispatchEvent(new CustomEvent('tirtakala-firebase-auth', { detail: null })); return; }
-          setFirebaseStatus('waiting', 'Memuat profil dan hak akses...');
           try {
             const profileSnapshot = await get(ref(firebaseDatabase, `profiles/${user.uid}`));
             firebaseProfile = profileSnapshot.exists() ? profileSnapshot.val() : null;
-            if (!firebaseProfile) { setFirebaseStatus('error', 'Hak akses wilayah belum dapat diverifikasi'); window.dispatchEvent(new CustomEvent('tirtakala-firebase-auth', { detail: null })); return; }
-            window.dispatchEvent(new CustomEvent('tirtakala-firebase-auth', { detail: { uid: user.uid, user, profile: firebaseProfile } }));
+            window.dispatchEvent(new CustomEvent('tirtakala-firebase-auth', { detail: { uid: user.uid, profile: firebaseProfile } }));
             await testFirebaseConnection();
-          } catch (error) { setFirebaseStatus(error?.code === 'PERMISSION_DENIED' ? 'error' : 'offline', error?.code === 'PERMISSION_DENIED' ? 'Hak akses wilayah belum dapat diverifikasi' : 'Koneksi jaringan belum tersedia. Periksa internet lalu coba lagi.'); }
+          } catch (error) { setFirebaseStatus(error?.code === 'PERMISSION_DENIED' ? 'error' : 'offline', 'Profil atau akses database belum tersedia'); }
         });
         window.tirtakalaFirebase = { initializeFirebase, getFirebaseStatus, testFirebaseConnection, signIn: (email, password) => signInWithEmailAndPassword(firebaseAuth, email, password), auth: () => firebaseAuth, database: () => firebaseDatabase, profile: () => firebaseProfile, rulesTemplates: FIREBASE_RULES_TEMPLATES };
       } catch (error) { setFirebaseStatus('waiting', 'Menunggu SDK Firebase'); }
