@@ -50,6 +50,35 @@
     const setFirebaseStatus = (state, message) => { firebaseStatus = { ...firebaseStatus, state, message }; window.dispatchEvent(new CustomEvent('tirtakala-firebase-status', { detail: getFirebaseStatus() })); };
     const pendingStorageKey = 'tirtakala-firebase-pending-v1';
     const deviceStorageKey = 'tirtakala-firebase-device-v1';
+    const sharedDataPath = 'appData/shared/records';
+    const firebaseRecordRef = recordId => ref(firebaseDatabase, `${sharedDataPath}/${encodeURIComponent(String(recordId))}`);
+    const stableFirebaseRecordId = (collection, record) => `${collection}:${String(record.idPelanggan || record.id || record.record_id || record.noPelanggan || record.no || 'unknown')}`;
+    const writeFirebaseRecord = async (collection, record, operation = 'UPSERT') => {
+      if (!firebaseDatabase || !firebaseUser || !firebaseProfile) return false;
+      const recordId = stableFirebaseRecordId(collection, record);
+      const now = new Date().toISOString();
+      const prior = await get(firebaseRecordRef(recordId));
+      const previous = prior.exists() ? prior.val() : {};
+      const next = { ...previous, ...record, recordId, collection, createdAt: previous.createdAt || now, updatedAt: now, updatedBy: firebaseUser.uid, version: Number(previous.version || 0) + 1, operation, idempotencyKey: `${recordId}:${Number(previous.version || 0) + 1}` };
+      await set(firebaseRecordRef(recordId), next);
+      return true;
+    };
+    let sharedListenerUnsubscribe = null;
+    let subscribedUid = null;
+    const attachSharedDataListener = uid => {
+      if (!firebaseDatabase || !uid || sharedListenerUnsubscribe) return;
+      subscribedUid = uid;
+      sharedListenerUnsubscribe = onValue(ref(firebaseDatabase, sharedDataPath), snapshot => {
+        const records = Object.values(snapshot.val() || {}).filter(Boolean);
+        window.dispatchEvent(new CustomEvent('tirtakala-shared-data', { detail: records }));
+        setFirebaseStatus('online', 'Realtime aktif');
+      }, error => setFirebaseStatus(error?.code === 'PERMISSION_DENIED' ? 'error' : 'offline', 'Data cloud belum dapat dibaca; periksa Rules Firebase.'));
+    };
+    const detachSharedDataListener = () => {
+      if (sharedListenerUnsubscribe) sharedListenerUnsubscribe();
+      sharedListenerUnsubscribe = null;
+      subscribedUid = null;
+    };
     const getStableDeviceId = () => { try { let id = localStorage.getItem(deviceStorageKey); if (!id) { id = `device-${crypto.randomUUID()}`; localStorage.setItem(deviceStorageKey, id); } return id; } catch (error) { return `session-${Date.now()}`; } };
     const readPendingChanges = () => { try { const rows = JSON.parse(localStorage.getItem(pendingStorageKey) || '[]'); return Array.isArray(rows) ? rows : []; } catch (error) { return []; } };
     const queueFirebaseChange = (collection, regionId, record, operation = 'UPSERT') => {
