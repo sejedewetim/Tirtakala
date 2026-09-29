@@ -1,200 +1,10 @@
 <!doctype html>
 <html lang="id"><head><script>window["__codeletBootstrap__"]=JSON.parse('{"A":"A","B":"20260929-05-baae6c9","C":{"Abril Fatface":"YACgEZbkUVE,0","Alfa Slab One":"YACgEYS9sJU,0","Anton":"YACgEcYqQ-A,0","Archivo":"YACgEZulLoA,0","Arial Narrow":"YAGyDvJ_4Ts,0","Arial Rounded MT Bold":"YAFcfoaHu-s,0","Arial":"YAGyDvJ_4Ts,0","Avenir Next":"YAFcfmNq6UY,0","Baloo 2":"YADK30bC6HQ,0","Bebas Neue":"YACgESME5ew,0","Bricolage Grotesque":"YAFyMcdwzpc,0","Broken Glyph":"YADZ-exUkv0,0","Canva Sans":"YAFdJjTk5UU,1","Caveat":"YALBs2ploWQ,0","Comic Sans MS":"YAFcfvtOAUY,1","Cormorant Garamond":"YAFdJhX-538,0","Courier New":"YAGzXiGs0_8,0","Courier Prime":"YAD1aFjegN8,0","DM Sans":"YAD1aU3sLnI,0","DM Serif Display":"YAD1aYG82rc,0","Forum":"YACgEcnnqB4,0","Fraunces":"YAFdJpU7Kkk,0","Georgia":"YAGzXkO0pEM,0","Ghost Mono":"YAHQutsX00Q,0","Hanken Grotesk":"YAFcfhwp99E,0","Helvetica Neue":"YAFcf6CtJfI,0","Helvetica":"YAFcf6CtJfI,0","IBM Plex Mono":"YAFdJkmvhGI,0","Impact":"YAFcfnjI7Vk,0","Instrument Serif":"YAHFeOnZNEk,0","Inter":"YAFdJvSyp_k,3","Iowan Old Style":"YAGNIFa8j9o,0","Jacques Francois":"YADK3zbC6RM,0","JetBrains Mono":"YAFdJksXcAk,0","Josefin Sans":"YAFdJjvw9Ps,0","Lato":"YAFdJuFCnaw,0","Libre Baskerville":"YACgEUFdPdA,0","Lobster":"YAD8SnSjSFI,0","Lora":"YACgEXvxf8Q,0","Merriweather":"YACgEXvHxxs,0","Montserrat":"YAFdtQi73Xs,0","Nunito":"YAFdJoNRMmU,1","Oleo Script":"YACgEQQ14jI,0","Oswald":"YACgEQY10lw,0","Pacifico":"YADLjORQ1u4,0","Phantom Sans":"YAFdJvgJ5TU,0","Playfair Display":"YAFdJhem5V8,1","Plus Jakarta Sans":"YAGvf3_u0_Q,0","Poppins":"YAFdJjbTu24,1","Press Start 2P":"YAFyGr-8pmQ,0","Quicksand":"YAFdJpYtCxE,1","Raleway":"YAFdJhmxbVQ,1","Roboto Slab":"YAFdJswIKAg,0","Rockwell":"YAFcfyVZnN0,0","Rye":"YACgEdQP21k,0","Segoe UI":"YAHNdRD1Klw,0","Source Sans 3":"YAG4lO1Mj10,0","Source Serif 4":"YACgEfdj394,0","Space Grotesk":"YADZ-dYEmhg,0","Space Mono":"YADW1-vpsoc,0","Times New Roman":"YAGzXW3gftg,0","Times":"YAGzXW3gftg,0","Trebuchet MS":"YAFcfrglpVA,0","UV Display":"YAEdVfSSpYo,0","UV Sans":"YAFdJvgJ5TU,0","Ubuntu":"YACgERDU--Q,0","Verdana":"YAGzXTctYtQ,0","Work Sans":"YAGXhLOKv44,0","Yellowtail":"YACgEYG4kG4,0","ui-monospace":"YAD1aFjegN8,0","ui-sans-serif":"YACkoD1yZN0,0"}}');</script><script src="/_sdk/6542d56fbfe7a3eb.telemetry_sdk.js" integrity="sha512-ECdM0nK7EkwDuOqho2qxgyRQXyBHk9hZqRKMBr+Xsu6zjeHlt+qkO2N2YRiHN7Kg4e1fEHDhjIp4bGJYVypv1g=="></script>
-  <script src="https://cdn.jsdelivr.net/npm/lucide@0.577.0/dist/umd/lucide.min.js" type="text/javascript"></script>
   <script src="https://cdn.tailwindcss.com/3.4.17" type="text/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.577.0/dist/umd/lucide.min.js" type="text/javascript"></script>
   <script src="/_sdk/6c2ecc939521f244.data_sdk.js" type="text/javascript" integrity="sha512-gRx8s+XsZDN6mSIQu2sivLZysbV0WHhb5kXNUWlgVb5lCMU1foJYukyMEDPv8Tnoocb8iwqB4XdRrWc7oEGzIQ=="></script>
   <script src="/_sdk/6bf4579cc4c25151.editing_sdk.js" type="text/javascript" integrity="sha512-12l4JxmokLfWaGAHNO68l5Ev8ahSshUKfuxnYUB8nkqSU1+WiCvimsPjHzPjw1k7DcHL+eZ+K9Bld04jnd5gkg=="></script>
   <script src="/_sdk/ddcab3e45959c817.resizing_sdk.js" type="text/javascript" integrity="sha512-VAviUKfZVzugWBSeULYjSljTX+nb84wc6Zzbx5GQaQgh6X2ISSjXi8eIiCDGdwDh10esJMY0+QFQgUy9NcrTlQ=="></script>
-  <script type="module">
-    import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, setPersistence, browserLocalPersistence } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
-    import { getDatabase, ref, get, set, onValue, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js';
-
-    const FIREBASE_CONFIG = {
-      apiKey: "AIzaSyB4VY-imlec8t7tSWsJ5fpyp6Uyto3PVuc",
-      authDomain: "tirtakala-71f4f.firebaseapp.com",
-      projectId: "tirtakala-71f4f",
-      storageBucket: "tirtakala-71f4f.firebasestorage.app",
-      messagingSenderId: "608073400079",
-      appId: "1:608073400079:web:ce0324175828400023487a",
-      measurementId: "G-68E5H17Q4L"
-    };
-    const FIREBASE_RULES_TEMPLATES = {
-      testing: `{
-  "rules": {
-    ".read": false,
-    ".write": false,
-    "appData": { "$uid": { ".read": "auth != null && auth.uid === $uid", ".write": "auth != null && auth.uid === $uid" } }
-  }
-}`,
-      production: `{
-  "rules": {
-    ".read": false, ".write": false,
-    "appData": { "$uid": {
-      ".read": "auth != null && auth.uid === $uid && auth.token.role === 'Super Admin'",
-      ".write": "auth != null && auth.uid === $uid && auth.token.role === 'Super Admin'",
-      "regions": { "$region": {
-        ".read": "auth != null && auth.uid === $uid && (auth.token.role === 'Super Admin' || (auth.token.regionId === $region && (auth.token.role === 'Admin Wilayah' || auth.token.role === 'Petugas Meter' || auth.token.role === 'Bendahara'))) ",
-        ".write": "auth != null && auth.uid === $uid && (auth.token.role === 'Super Admin' || (auth.token.regionId === $region && (auth.token.role === 'Admin Wilayah' || auth.token.role === 'Petugas Meter' || auth.token.role === 'Bendahara')))"
-      } }
-    } }
-  }
-}`
-    };
-    let firebaseAppSingleton = null;
-    let firebaseAuth = null;
-    let firebaseDatabase = null;
-    let firebaseStatus = { state: 'waiting', message: 'Menunggu SDK Firebase', lastSync: null, pending: 0, logs: [] };
-    let firebaseUser = null;
-    let firebaseProfile = null;
-    const setFirebaseStatus = (state, message) => { firebaseStatus = { ...firebaseStatus, state, message }; window.dispatchEvent(new CustomEvent('tirtakala-firebase-status', { detail: getFirebaseStatus() })); };
-    const pendingStorageKey = 'tirtakala-firebase-pending-v1';
-    const deviceStorageKey = 'tirtakala-firebase-device-v1';
-    const sharedDataPath = 'appData/shared/records';
-    const firebaseRecordRef = recordId => ref(firebaseDatabase, `${sharedDataPath}/${encodeURIComponent(String(recordId))}`);
-    const stableFirebaseRecordId = (collection, record) => `${collection}:${String(record.idPelanggan || record.id || record.record_id || record.noPelanggan || record.no || 'unknown')}`;
-    const writeFirebaseRecord = async (collection, record, operation = 'UPSERT') => {
-      if (!firebaseDatabase || !firebaseUser || !firebaseProfile) return false;
-      const recordId = stableFirebaseRecordId(collection, record);
-      const now = new Date().toISOString();
-      const prior = await get(firebaseRecordRef(recordId));
-      const previous = prior.exists() ? prior.val() : {};
-      const next = { ...previous, ...record, recordId, collection, createdAt: previous.createdAt || now, updatedAt: now, updatedBy: firebaseUser.uid, version: Number(previous.version || 0) + 1, operation, idempotencyKey: `${recordId}:${Number(previous.version || 0) + 1}` };
-      await set(firebaseRecordRef(recordId), next);
-      return true;
-    };
-    let sharedListenerUnsubscribe = null;
-    let subscribedUid = null;
-    const attachSharedDataListener = uid => {
-      if (!firebaseDatabase || !uid || sharedListenerUnsubscribe) return;
-      subscribedUid = uid;
-      sharedListenerUnsubscribe = onValue(ref(firebaseDatabase, sharedDataPath), snapshot => {
-        const records = Object.values(snapshot.val() || {}).filter(Boolean);
-        window.dispatchEvent(new CustomEvent('tirtakala-shared-data', { detail: records }));
-        setFirebaseStatus('online', 'Realtime aktif');
-      }, error => setFirebaseStatus(error?.code === 'PERMISSION_DENIED' ? 'error' : 'offline', 'Data cloud belum dapat dibaca; periksa Rules Firebase.'));
-    };
-    const detachSharedDataListener = () => {
-      if (sharedListenerUnsubscribe) sharedListenerUnsubscribe();
-      sharedListenerUnsubscribe = null;
-      subscribedUid = null;
-    };
-    const getStableDeviceId = () => { try { let id = localStorage.getItem(deviceStorageKey); if (!id) { id = `device-${crypto.randomUUID()}`; localStorage.setItem(deviceStorageKey, id); } return id; } catch (error) { return `session-${Date.now()}`; } };
-    const readPendingChanges = () => { try { const rows = JSON.parse(localStorage.getItem(pendingStorageKey) || '[]'); return Array.isArray(rows) ? rows : []; } catch (error) { return []; } };
-    const queueFirebaseChange = (collection, regionId, record, operation = 'UPSERT') => {
-      if (!firebaseUser || !firebaseProfile || !firebaseDatabase || !regionId || !record?.id) return false;
-      const now = new Date().toISOString();
-      const change = { ...record, id: String(record.id), createdAt: record.createdAt || now, updatedAt: now, updatedBy: firebaseUser.uid, deviceId: getStableDeviceId(), version: Number(record.version || 0) + 1, regionId, operation, source: 'client' };
-      const queue = readPendingChanges();
-      const index = queue.findIndex(row => row.id === change.id && row.collection === collection && row.regionId === regionId);
-      const queued = { id: change.id, collection, regionId, record: change, status: 'pending', retryCount: index >= 0 ? queue[index].retryCount || 0 : 0 };
-      if (index >= 0) queue[index] = queued; else queue.push(queued);
-      try { localStorage.setItem(pendingStorageKey, JSON.stringify(queue)); firebaseStatus.pending = queue.length; window.dispatchEvent(new CustomEvent('tirtakala-firebase-status', { detail: getFirebaseStatus() })); return true; } catch (error) { setFirebaseStatus('error', 'Antrean sinkronisasi lokal tidak dapat disimpan'); return false; }
-    };
-    window.addEventListener('tirtakala-firebase-auth', async event => {
-      const detail = event.detail;
-      if (!detail?.uid || !detail.profile) return;
-      const profile = detail.profile;
-      const role = profile.role;
-      const regionIds = role === 'Super Admin' ? Object.keys(profile.regions || {}) : Array.isArray(profile.regionIds) ? profile.regionIds : profile.regionId ? [profile.regionId] : [];
-      if (!['Super Admin', 'Admin Wilayah', 'Petugas Meter', 'Bendahara'].includes(role) || (role !== 'Super Admin' && !regionIds.length)) { setFirebaseStatus('waiting', 'Menunggu verifikasi peran dan wilayah'); return; }
-      const permittedCollections = role === 'Petugas Meter' ? ['meters'] : role === 'Bendahara' ? ['payments', 'income', 'expenses', 'reports'] : ['customers', 'meters', 'bills', 'payments', 'arrears', 'income', 'expenses', 'reports', 'areas'];
-      for (const regionId of regionIds) for (const collection of permittedCollections) {
-        onValue(ref(firebaseDatabase, `appData/${detail.uid}/regions/${regionId}/${collection}`), snapshot => {
-          window.dispatchEvent(new CustomEvent('tirtakala-firebase-data', { detail: { regionId, collection, value: snapshot.val() || {} } }));
-        }, error => setFirebaseStatus(error?.code === 'PERMISSION_DENIED' ? 'error' : 'offline', 'Data wilayah belum dapat dibaca; periksa Rules Firebase.'));
-      }
-    });
-    const getFirebaseStatus = () => ({ ...firebaseStatus, user: firebaseUser ? { uid: firebaseUser.uid, email: firebaseUser.email || '' } : null });
-    let authListenerInstalled = false;
-    let connectedListener = null;
-    let connectionRetryTimer = null;
-    let connectionRetryDelay = 1500;
-    const retryFirebaseInitialization = () => {
-      clearTimeout(connectionRetryTimer);
-      connectionRetryTimer = setTimeout(initializeFirebase, connectionRetryDelay);
-      connectionRetryDelay = Math.min(connectionRetryDelay * 2, 30000);
-    };
-    async function initializeFirebase() {
-      try {
-        setFirebaseStatus('waiting', 'Menghubungkan Firebase');
-        const existingApps = getApps();
-        firebaseAppSingleton = existingApps.find(app => app.options.projectId === FIREBASE_CONFIG.projectId) || initializeApp(FIREBASE_CONFIG, existingApps.length ? `tirtakala-${FIREBASE_CONFIG.projectId}` : undefined);
-        if (firebaseAppSingleton.options.projectId !== 'tirtakala-71f4f') throw new Error('Firebase project mismatch');
-        firebaseAuth = getAuth(firebaseAppSingleton);
-        try { await setPersistence(firebaseAuth, browserLocalPersistence); } catch (error) { /* Existing browser session may still restore. */ }
-        firebaseDatabase = getDatabase(firebaseAppSingleton);
-        if (firebaseDatabase.app.options.projectId !== 'tirtakala-71f4f') throw new Error('Realtime Database project mismatch');
-        window.tirtakalaFirebase = { initializeFirebase, getFirebaseStatus, testFirebaseConnection, signIn: (email, password) => signInWithEmailAndPassword(firebaseAuth, email, password), auth: () => firebaseAuth, database: () => firebaseDatabase, profile: () => firebaseProfile, rulesTemplates: FIREBASE_RULES_TEMPLATES };
-        if (connectedListener) connectedListener();
-        connectedListener = onValue(ref(firebaseDatabase, '/.info/connected'), snapshot => {
-          if (snapshot.val() === true && firebaseUser) bootstrapFirebaseUser(firebaseUser);
-          else if (snapshot.val() === false) setFirebaseStatus('offline', 'Offline');
-        }, error => {
-          setFirebaseStatus(error?.code === 'PERMISSION_DENIED' ? 'error' : 'offline', error?.code === 'PERMISSION_DENIED' ? 'Rules ditolak' : 'Gagal sinkron');
-          retryFirebaseInitialization();
-        });
-        if (!authListenerInstalled) {
-          authListenerInstalled = true;
-          onAuthStateChanged(firebaseAuth, async user => {
-            firebaseUser = user;
-            firebaseProfile = null;
-            if (!user) {
-              firebaseStatus = { ...firebaseStatus, lastSync: null };
-              setFirebaseStatus('waiting', 'Menunggu autentikasi');
-              window.dispatchEvent(new CustomEvent('tirtakala-firebase-auth', { detail: null }));
-              return;
-            }
-            setFirebaseStatus('waiting', 'Memulihkan sesi');
-            await bootstrapFirebaseUser(user);
-          }, error => {
-            setFirebaseStatus(error?.code === 'PERMISSION_DENIED' ? 'error' : 'offline', error?.code === 'PERMISSION_DENIED' ? 'Rules ditolak' : 'Gagal sinkron');
-            retryFirebaseInitialization();
-          });
-        }
-        connectionRetryDelay = 1500;
-      } catch (error) {
-        setFirebaseStatus('offline', 'Database URL belum tersedia atau konfigurasi Firebase gagal');
-        retryFirebaseInitialization();
-      }
-    }
-    async function bootstrapFirebaseUser(user) {
-      if (!firebaseDatabase || !user || firebaseAppSingleton?.options?.projectId !== 'tirtakala-71f4f') return false;
-      setFirebaseStatus('waiting', 'Memuat data cloud');
-      try {
-        const profileSnapshot = await get(ref(firebaseDatabase, `profiles/${user.uid}`));
-        if (!profileSnapshot.exists()) { setFirebaseStatus('waiting', 'Menunggu autentikasi'); retryFirebaseInitialization(); return false; }
-        firebaseProfile = profileSnapshot.val();
-        const status = await testFirebaseConnection();
-        if (!status) { retryFirebaseInitialization(); return false; }
-        window.dispatchEvent(new CustomEvent('tirtakala-firebase-auth', { detail: { uid: user.uid, profile: firebaseProfile } }));
-        setFirebaseStatus('online', 'Realtime aktif');
-        return true;
-      } catch (error) {
-        setFirebaseStatus(error?.code === 'PERMISSION_DENIED' ? 'error' : 'offline', error?.code === 'PERMISSION_DENIED' ? 'Rules ditolak' : 'Gagal sinkron');
-        retryFirebaseInitialization();
-        return false;
-      }
-    }
-    async function testFirebaseConnection() {
-      if (!firebaseDatabase) { setFirebaseStatus('waiting', 'Menunggu SDK Firebase'); return false; }
-      if (!firebaseUser || !firebaseProfile) { setFirebaseStatus('waiting', 'Menunggu autentikasi dan profil'); return false; }
-      const role = firebaseProfile.role || firebaseUser.getIdTokenResult && (await firebaseUser.getIdTokenResult()).claims.role;
-      const regionId = firebaseProfile.regionId || (firebaseUser.getIdTokenResult && (await firebaseUser.getIdTokenResult()).claims.regionId);
-      if (!role || (role !== 'Super Admin' && !regionId)) { setFirebaseStatus('waiting', 'Menunggu verifikasi peran dan wilayah'); return false; }
-      const path = role === 'Super Admin' ? `appData/${firebaseUser.uid}/syncMeta` : `appData/${firebaseUser.uid}/regions/${regionId}/areas`;
-      try {
-        const result = await Promise.race([get(ref(firebaseDatabase, path)), new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 8000))]);
-        setFirebaseStatus('online', 'Online');
-        firebaseStatus.lastSync = new Date().toISOString();
-        window.dispatchEvent(new CustomEvent('tirtakala-firebase-status', { detail: getFirebaseStatus() }));
-        return result.exists() || result.val() === null;
-      } catch (error) { setFirebaseStatus(error?.code === 'PERMISSION_DENIED' ? 'error' : 'offline', error?.code === 'PERMISSION_DENIED' ? 'Akses ditolak. Periksa Rules Firebase.' : 'Database belum dapat dijangkau'); return false; }
-    }
-    window.addEventListener('online', () => testFirebaseConnection());
-    window.addEventListener('offline', () => setFirebaseStatus('offline', 'Offline'));
-    initializeFirebase();
-  </script>
   <script>window["__codeletBootstrap__"]=JSON.parse('{"A":"A","B":"20260925-05-46ec85d","C":{"Abril Fatface":"YACgEZbkUVE,0","Alfa Slab One":"YACgEYS9sJU,0","Anton":"YACgEcYqQ-A,0","Archivo":"YACgEZulLoA,0","Arial Narrow":"YAGyDvJ_4Ts,0","Arial Rounded MT Bold":"YAFcfoaHu-s,0","Arial":"YAGyDvJ_4Ts,0","Avenir Next":"YAFcfmNq6UY,0","Baloo 2":"YADK30bC6HQ,0","Bebas Neue":"YACgESME5ew,0","Bricolage Grotesque":"YAFyMcdwzpc,0","Broken Glyph":"YADZ-exUkv0,0","Canva Sans":"YAFdJjTk5UU,1","Caveat":"YALBs2ploWQ,0","Comic Sans MS":"YAFcfvtOAUY,1","Cormorant Garamond":"YAFdJhX-538,0","Courier New":"YAGzXiGs0_8,0","Courier Prime":"YAD1aFjegN8,0","DM Sans":"YAD1aU3sLnI,0","DM Serif Display":"YAD1aYG82rc,0","Forum":"YACgEcnnqB4,0","Fraunces":"YAFdJpU7Kkk,0","Georgia":"YAGzXkO0pEM,0","Ghost Mono":"YAHQutsX00Q,0","Hanken Grotesk":"YAFcfhwp99E,0","Helvetica Neue":"YAFcf6CtJfI,0","Helvetica":"YAFcf6CtJfI,0","IBM Plex Mono":"YAFdJkmvhGI,0","Impact":"YAFcfnjI7Vk,0","Instrument Serif":"YAHFeOnZNEk,0","Inter":"YAFdJvSyp_k,3","Iowan Old Style":"YAGNIFa8j9o,0","Jacques Francois":"YADK3zbC6RM,0","JetBrains Mono":"YAFdJksXcAk,0","Josefin Sans":"YAFdJjvw9Ps,0","Lato":"YAFdJuFCnaw,0","Libre Baskerville":"YACgEUFdPdA,0","Lobster":"YAD8SnSjSFI,0","Lora":"YACgEXvxf8Q,0","Merriweather":"YACgEXvHxxs,0","Montserrat":"YAFdtQi73Xs,0","Nunito":"YAFdJoNRMmU,1","Oleo Script":"YACgEQQ14jI,0","Oswald":"YACgEQY10lw,0","Pacifico":"YADLjORQ1u4,0","Phantom Sans":"YAFdJvgJ5TU,0","Playfair Display":"YAFdJhem5V8,1","Plus Jakarta Sans":"YAGvf3_u0_Q,0","Poppins":"YAFdJjbTu24,1","Press Start 2P":"YAFyGr-8pmQ,0","Quicksand":"YAFdJpYtCxE,1","Raleway":"YAFdJhmxbVQ,1","Roboto Slab":"YAFdJswIKAg,0","Rockwell":"YAFcfyVZnN0,0","Rye":"YACgEdQP21k,0","Segoe UI":"YAHNdRD1Klw,0","Source Sans 3":"YAG4lO1Mj10,0","Source Serif 4":"YACgEfdj394,0","Space Grotesk":"YADZ-dYEmhg,0","Space Mono":"YADW1-vpsoc,0","Times New Roman":"YAGzXW3gftg,0","Times":"YAGzXW3gftg,0","Trebuchet MS":"YAFcfrglpVA,0","UV Display":"YAEdVfSSpYo,0","UV Sans":"YAFdJvgJ5TU,0","Ubuntu":"YACgERDU--Q,0","Verdana":"YAGzXTctYtQ,0","Work Sans":"YAGXhLOKv44,0","Yellowtail":"YACgEYG4kG4,0","ui-monospace":"YAD1aFjegN8,0","ui-sans-serif":"YACkoD1yZN0,0"}}');</script>
   <script src="/_sdk/6542d56fbfe7a3eb.telemetry_sdk.js" integrity="sha512-ECdM0nK7EkwDuOqho2qxgyRQXyBHk9hZqRKMBr+Xsu6zjeHlt+qkO2N2YRiHN7Kg4e1fEHDhjIp4bGJYVypv1g=="></script>
   <meta charset="UTF-8">
@@ -8934,14 +8744,6 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
           useEffect(() => { if (savedAppState) showNotification('Data terakhir berhasil dimuat.'); }, []);
           
           const [notification, setNotification] = useState(null);
-          const [firebaseUiStatus, setFirebaseUiStatus] = useState({ state: 'waiting', message: 'Menunggu SDK Firebase', lastSync: null, pending: 0 });
-          const [showFirebaseDetails, setShowFirebaseDetails] = useState(false);
-          useEffect(() => {
-            const updateFirebaseStatus = event => setFirebaseUiStatus(event.detail || window.tirtakalaFirebase?.getFirebaseStatus?.() || { state: 'waiting', message: 'Menunggu SDK Firebase' });
-            window.addEventListener('tirtakala-firebase-status', updateFirebaseStatus);
-            if (window.tirtakalaFirebase) updateFirebaseStatus({ detail: window.tirtakalaFirebase.getFirebaseStatus() });
-            return () => window.removeEventListener('tirtakala-firebase-status', updateFirebaseStatus);
-          }, []);
           
           const showNotification = (msg, type = 'success') => {
             setNotification({ msg, type });
@@ -10904,6 +10706,58 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
             };
 
             const [restoreJson, setRestoreJson] = useState('');
+            const FIREBASE_CONFIG_KEY = 'tirtakala-firebase-config-v1';
+            const [firebaseConfig, setFirebaseConfig] = useState(() => { try { return JSON.parse(localStorage.getItem(FIREBASE_CONFIG_KEY) || '{}'); } catch (error) { return {}; } });
+            const [firebaseStatus, setFirebaseStatus] = useState({ connection: 'Offline', bootstrap: 'Belum dimulai', listener: 'Tidak aktif', queue: 0, lastSync: 'Belum ada', message: '' });
+            useEffect(() => { const missing = validateFirebaseConfig(firebaseConfig); if (!missing.length && firebaseConfig.databaseURL) setFirebaseStatus(current => ({ ...current, connection: 'Offline', message: 'Konfigurasi lokal tersedia. Koneksi ulang otomatis belum dapat dilakukan karena Firebase Auth/Realtime Database SDK dan cloud bootstrap belum terintegrasi.' })); }, []);
+            const [firebaseCode, setFirebaseCode] = useState(() => { try { return localStorage.getItem('tirtakala-shared-code-v1') || ''; } catch (error) { return ''; } });
+            const firebaseFields = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId', 'measurementId'];
+            const [showFirebaseSecrets, setShowFirebaseSecrets] = useState({});
+            const validateFirebaseConfig = config => firebaseFields.filter(key => key !== 'measurementId' && !String(config[key] || '').trim());
+            const saveFirebaseConfig = () => {
+              const missing = validateFirebaseConfig(firebaseConfig);
+              if (missing.length) { showNotification(`Lengkapi konfigurasi wajib: ${missing.join(', ')}.`, 'error'); return; }
+              try { localStorage.setItem(FIREBASE_CONFIG_KEY, JSON.stringify(firebaseConfig)); showNotification('Konfigurasi Firebase tersimpan pada perangkat ini.'); }
+              catch (error) { showNotification('Konfigurasi tidak dapat disimpan di perangkat ini.', 'error'); }
+            };
+            const testFirebaseConnection = async () => {
+              const missing = validateFirebaseConfig(firebaseConfig);
+              if (missing.length) { setFirebaseStatus(current => ({ ...current, connection: 'Offline', message: `Konfigurasi wajib belum lengkap: ${missing.join(', ')}.` })); showNotification('Lengkapi konfigurasi Firebase sebelum pengujian.', 'error'); return; }
+              if (!firebaseConfig.databaseURL) { setFirebaseStatus(current => ({ ...current, connection: 'Offline', message: 'databaseURL belum tersedia. Tambahkan URL Realtime Database ke konfigurasi sebelum menguji.' })); showNotification('databaseURL belum tersedia; koneksi tidak dapat diuji.', 'error'); return; }
+              setFirebaseStatus(current => ({ ...current, connection: 'Menyinkronkan', message: 'Memeriksa Firebase tanpa menulis data bisnis…' }));
+              try {
+                const sdk = window.firebase;
+                if (!sdk || !sdk.initializeApp || !sdk.database || !sdk.auth) throw new Error('Firebase SDK atau Authentication/Realtime Database belum dimuat. Uji koneksi tidak dijalankan.');
+                const app = (sdk.apps || []).find(item => item.name === 'tirtakala') || sdk.initializeApp({ ...firebaseConfig }, 'tirtakala');
+                await app.auth().signInAnonymously();
+                const ref = app.database().ref('.info/connected');
+                const connected = await new Promise((resolve, reject) => {
+                  const timer = setTimeout(() => { ref.off('value', listener); reject(new Error('Realtime Database tidak mengonfirmasi koneksi. Periksa databaseURL dan Security Rules.')); }, 8000);
+                  const listener = snapshot => { if (snapshot.val() === true) { clearTimeout(timer); ref.off('value', listener); resolve(true); } };
+                  ref.on('value', listener, error => { clearTimeout(timer); ref.off('value', listener); reject(error); });
+                });
+                if (!connected) throw new Error('Realtime Database tidak terhubung.');
+                setFirebaseStatus(current => ({ ...current, connection: 'Online', message: 'Uji akses berhasil. Tekan Hubungkan Firebase untuk mengaktifkan sinkronisasi.' }));
+                showNotification('Uji akses Firebase berhasil. Belum ada data bisnis yang ditulis.');
+              } catch (error) {
+                setFirebaseStatus(current => ({ ...current, connection: 'Offline', message: error && error.code === 'auth/operation-not-allowed' ? 'Authentication anonim belum diaktifkan. Aktifkan metode Authentication yang sesuai dan periksa Security Rules.' : `Koneksi ditolak atau gagal: ${error.message || 'Periksa konfigurasi, Authentication, databaseURL, dan Security Rules.'}` }));
+                showNotification('Uji koneksi gagal; konfigurasi atau izin Firebase perlu diperiksa.', 'error');
+              }
+            };
+            const connectFirebase = async () => {
+              const missing = validateFirebaseConfig(firebaseConfig);
+              if (missing.length || !firebaseConfig.databaseURL) { setFirebaseStatus(current => ({ ...current, connection: 'Offline', message: missing.length ? `Konfigurasi wajib belum lengkap: ${missing.join(', ')}.` : 'databaseURL belum tersedia.' })); showNotification('Konfigurasi Firebase belum lengkap.', 'error'); return; }
+              if (firebaseStatus.connection !== 'Online' || !window.firebase || !window.firebase.apps || !window.firebase.apps.some(app => app.name === 'tirtakala')) { await testFirebaseConnection(); return; }
+              try { localStorage.setItem(FIREBASE_CONFIG_KEY, JSON.stringify(firebaseConfig)); setFirebaseStatus(current => ({ ...current, connection: 'Menyinkronkan', bootstrap: 'Menunggu integrasi cloud', listener: 'Belum terpasang', message: 'Akses teruji dan app Firebase siap. Bootstrap data dan listener tidak tersedia pada build ini; sinkronisasi belum diaktifkan.' })); showNotification('Firebase teruji, tetapi bootstrap/listener cloud aplikasi belum terintegrasi.', 'error'); }
+              catch (error) { setFirebaseStatus(current => ({ ...current, connection: 'Offline', message: 'Tidak dapat menyimpan konfigurasi Firebase.' })); }
+            };
+            const generateSharedCode = () => {
+              const bytes = new Uint8Array(8);
+              if (window.crypto && window.crypto.getRandomValues) window.crypto.getRandomValues(bytes); else { showNotification('Pembuat kode aman tidak tersedia di browser ini.', 'error'); return; }
+              const code = `TIRTA-${Array.from(bytes, byte => '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'[byte % 36]).join('')}`;
+              try { localStorage.setItem('tirtakala-shared-code-v1', code); setFirebaseCode(code); showNotification('Kode undangan dibuat sebagai pengenal saja, bukan akses Firebase.'); } catch (error) { showNotification('Kode tidak dapat disimpan di perangkat ini.', 'error'); }
+            };
+            const copySharedCode = async () => { try { await navigator.clipboard.writeText(firebaseCode); showNotification('Kode berhasil disalin.'); } catch (error) { showNotification('Tidak dapat menyalin kode dari browser ini.', 'error'); } };
             const validateAndRestoreBackup = () => {
               try {
                 const backup = JSON.parse(restoreJson);
@@ -10981,6 +10835,7 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
                   <button onClick={() => setActiveTab('wilayah')} className={`py-3 px-4 text-sm font-bold border-b-2 whitespace-nowrap flex items-center gap-2 transition-colors ${activeTab === 'wilayah' ? 'border-teal-600 text-teal-700' : 'border-transparent text-slate-500 hover:text-slate-700'}`}><Icon path={ICONS.map} className="w-4 h-4" /> Wilayah & Tarif</button>
                   <button onClick={() => setActiveTab('backup')} className={`py-3 px-4 text-sm font-bold border-b-2 whitespace-nowrap flex items-center gap-2 transition-colors ${activeTab === 'backup' ? 'border-teal-600 text-teal-700' : 'border-transparent text-slate-500 hover:text-slate-700'}`}><Icon path={ICONS.database} className="w-4 h-4" /> Backup Database</button>
                   <button onClick={() => setActiveTab('audit')} className={`py-3 px-4 text-sm font-bold border-b-2 whitespace-nowrap flex items-center gap-2 transition-colors ${activeTab === 'audit' ? 'border-teal-600 text-teal-700' : 'border-transparent text-slate-500 hover:text-slate-700'}`}><Icon path={ICONS.clock} className="w-4 h-4" /> Audit Log</button>
+                  <button onClick={() => setActiveTab('koneksi')} className={`py-3 px-4 text-sm font-bold border-b-2 whitespace-nowrap flex items-center gap-2 transition-colors ${activeTab === 'koneksi' ? 'border-teal-600 text-teal-700' : 'border-transparent text-slate-500 hover:text-slate-700'}`}><Icon path={ICONS.database} className="w-4 h-4" /> Koneksi</button>
                 </div>
 
                 <div className="mt-6">
@@ -11146,6 +11001,19 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
                         </table>
                       </div>
                     </div>
+                  )}
+                  {activeTab === 'koneksi' && (
+                    <section className="space-y-5 animate-fade-in" aria-labelledby="connection-title">
+                      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+                        <div className="mb-5 border-b border-slate-100 pb-4"><h3 id="connection-title" className="font-bold text-lg text-slate-800">Koneksi Firebase</h3><p className="mt-1 text-sm text-slate-500">Masukkan konfigurasi dari Firebase Console. Nilai disimpan hanya di perangkat ini; tidak ada project atau database baru yang dibuat.</p></div>
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                          {firebaseFields.map(key => <div key={key} className="space-y-1"><label htmlFor={`firebase-${key}`} className="text-sm font-semibold text-slate-700">{key}</label><div className="flex gap-2"><input id={`firebase-${key}`} type={(key === 'apiKey' || key === 'measurementId') && !showFirebaseSecrets[key] ? 'password' : 'text'} autoComplete="off" value={firebaseConfig[key] || ''} onChange={event => setFirebaseConfig(current => ({ ...current, [key]: event.target.value }))} className="min-w-0 flex-1 rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder={key}/>{(key === 'apiKey' || key === 'measurementId') && <button type="button" onClick={() => setShowFirebaseSecrets(current => ({ ...current, [key]: !current[key] }))} className="rounded-lg border border-slate-300 px-3 text-xs font-semibold text-slate-600 focus:outline-none focus:ring-2 focus:ring-teal-500" aria-label={`${showFirebaseSecrets[key] ? 'Sembunyikan' : 'Tampilkan'} ${key}`}>{showFirebaseSecrets[key] ? 'Sembunyikan' : 'Tampilkan'}</button>}</div></div>)}
+                        </div>
+                        <label htmlFor="firebase-database-url" className="mt-4 block text-sm font-semibold text-slate-700">databaseURL</label><input id="firebase-database-url" type="url" autoComplete="off" value={firebaseConfig.databaseURL || ''} onChange={event => setFirebaseConfig(current => ({ ...current, databaseURL: event.target.value }))} placeholder="https://project-default-rtdb.firebaseio.com" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"/>
+                        <div className="mt-5 flex flex-wrap justify-end gap-2"><button type="button" onClick={saveFirebaseConfig} className="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">Simpan</button><button type="button" onClick={testFirebaseConnection} className="rounded-lg border border-teal-700 px-4 py-2.5 text-sm font-bold text-teal-800 hover:bg-teal-50">Uji Koneksi</button><button type="button" onClick={connectFirebase} className="rounded-lg bg-amber-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-amber-700">Hubungkan Firebase</button></div>
+                      </div>
+                      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"><h3 className="font-bold text-lg text-slate-800">Sinkronisasi Awan & Multi-Device</h3><div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4" role="status" aria-live="polite"><p className="font-bold text-amber-900">{firebaseStatus.connection} · {firebaseStatus.message || 'Bootstrap dan listener cloud belum terintegrasi.'}</p></div><div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"><div className="rounded-xl border bg-slate-50 p-4"><p className="text-xs font-bold uppercase text-slate-500">Project / database host</p><p className="mt-1 break-all text-sm font-semibold">{firebaseConfig.projectId || 'Belum dikonfigurasi'}{firebaseConfig.databaseURL ? ` · ${String(firebaseConfig.databaseURL).replace(/^https?:\/\//, '').split('/')[0]}` : ''}</p></div><div className="rounded-xl border bg-slate-50 p-4"><p className="text-xs font-bold uppercase text-slate-500">Bootstrap cloud</p><p className="mt-1 text-sm">{firebaseStatus.bootstrap}</p></div><div className="rounded-xl border bg-slate-50 p-4"><p className="text-xs font-bold uppercase text-slate-500">Realtime listener</p><p className="mt-1 text-sm">{firebaseStatus.listener}</p></div><div className="rounded-xl border bg-slate-50 p-4"><p className="text-xs font-bold uppercase text-slate-500">Antrean offline</p><p className="mt-1 text-sm">{firebaseStatus.queue}</p></div><div className="rounded-xl border bg-slate-50 p-4"><p className="text-xs font-bold uppercase text-slate-500">Sinkronisasi terakhir</p><p className="mt-1 text-sm">{firebaseStatus.lastSync}</p></div></div><div className="mt-5 border-t border-slate-100 pt-4"><h4 className="font-bold text-slate-800">Kode akses multi-device</h4><p className="mt-1 text-xs text-slate-500">Kode ini hanya pengenal/undangan organisasi, bukan login atau pengganti Authentication dan Security Rules.</p><div className="mt-3 flex flex-wrap items-center gap-2"><button type="button" onClick={generateSharedCode} className="rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-bold text-white hover:bg-teal-800">Generate Kode</button>{firebaseCode && <><code className="rounded-lg border bg-slate-50 px-4 py-2.5 font-mono font-bold tracking-wider text-slate-800">{firebaseCode}</code><button type="button" onClick={copySharedCode} className="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">Salin</button></>}</div></div></div>
+                    </section>
                   )}
                 </div>
               </div>
@@ -11456,7 +11324,10 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
                      <h1 className="text-xl font-bold text-slate-800 font-serif hidden sm:block">{MENU_ITEMS.find(m => m.id === activeMenu)?.label}</h1>
                   </div>
                   <div className="flex items-center gap-6">
-                     {/* Status sinkronisasi tetap internal; Firebase berjalan di latar belakang. */}
+                     <div className="hidden lg:flex items-center gap-2 bg-[#fdfbf7] px-4 py-2 rounded-full border border-amber-900/10">
+                       <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                       <span className="text-xs font-semibold text-slate-600">Sistem Online</span>
+                     </div>
                      <div className="flex items-center gap-3">
                         <p className="text-sm font-medium text-slate-500">Periode Aktif:</p>
                         <input type="month" value={currentPeriode} onChange={(e) => setCurrentPeriode(e.target.value)} className="border border-slate-300 rounded-lg px-3 py-1.5 text-sm font-bold text-teal-700 outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-teal-50" />
