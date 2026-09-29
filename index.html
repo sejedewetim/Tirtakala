@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="id"><head><script>window["__codeletBootstrap__"]=JSON.parse('{"A":"A","B":"20260929-05-baae6c9","C":{"Abril Fatface":"YACgEZbkUVE,0","Alfa Slab One":"YACgEYS9sJU,0","Anton":"YACgEcYqQ-A,0","Archivo":"YACgEZulLoA,0","Arial Narrow":"YAGyDvJ_4Ts,0","Arial Rounded MT Bold":"YAFcfoaHu-s,0","Arial":"YAGyDvJ_4Ts,0","Avenir Next":"YAFcfmNq6UY,0","Baloo 2":"YADK30bC6HQ,0","Bebas Neue":"YACgESME5ew,0","Bricolage Grotesque":"YAFyMcdwzpc,0","Broken Glyph":"YADZ-exUkv0,0","Canva Sans":"YAFdJjTk5UU,1","Caveat":"YALBs2ploWQ,0","Comic Sans MS":"YAFcfvtOAUY,1","Cormorant Garamond":"YAFdJhX-538,0","Courier New":"YAGzXiGs0_8,0","Courier Prime":"YAD1aFjegN8,0","DM Sans":"YAD1aU3sLnI,0","DM Serif Display":"YAD1aYG82rc,0","Forum":"YACgEcnnqB4,0","Fraunces":"YAFdJpU7Kkk,0","Georgia":"YAGzXkO0pEM,0","Ghost Mono":"YAHQutsX00Q,0","Hanken Grotesk":"YAFcfhwp99E,0","Helvetica Neue":"YAFcf6CtJfI,0","Helvetica":"YAFcf6CtJfI,0","IBM Plex Mono":"YAFdJkmvhGI,0","Impact":"YAFcfnjI7Vk,0","Instrument Serif":"YAHFeOnZNEk,0","Inter":"YAFdJvSyp_k,3","Iowan Old Style":"YAGNIFa8j9o,0","Jacques Francois":"YADK3zbC6RM,0","JetBrains Mono":"YAFdJksXcAk,0","Josefin Sans":"YAFdJjvw9Ps,0","Lato":"YAFdJuFCnaw,0","Libre Baskerville":"YACgEUFdPdA,0","Lobster":"YAD8SnSjSFI,0","Lora":"YACgEXvxf8Q,0","Merriweather":"YACgEXvHxxs,0","Montserrat":"YAFdtQi73Xs,0","Nunito":"YAFdJoNRMmU,1","Oleo Script":"YACgEQQ14jI,0","Oswald":"YACgEQY10lw,0","Pacifico":"YADLjORQ1u4,0","Phantom Sans":"YAFdJvgJ5TU,0","Playfair Display":"YAFdJhem5V8,1","Plus Jakarta Sans":"YAGvf3_u0_Q,0","Poppins":"YAFdJjbTu24,1","Press Start 2P":"YAFyGr-8pmQ,0","Quicksand":"YAFdJpYtCxE,1","Raleway":"YAFdJhmxbVQ,1","Roboto Slab":"YAFdJswIKAg,0","Rockwell":"YAFcfyVZnN0,0","Rye":"YACgEdQP21k,0","Segoe UI":"YAHNdRD1Klw,0","Source Sans 3":"YAG4lO1Mj10,0","Source Serif 4":"YACgEfdj394,0","Space Grotesk":"YADZ-dYEmhg,0","Space Mono":"YADW1-vpsoc,0","Times New Roman":"YAGzXW3gftg,0","Times":"YAGzXW3gftg,0","Trebuchet MS":"YAFcfrglpVA,0","UV Display":"YAEdVfSSpYo,0","UV Sans":"YAFdJvgJ5TU,0","Ubuntu":"YACgERDU--Q,0","Verdana":"YAGzXTctYtQ,0","Work Sans":"YAGXhLOKv44,0","Yellowtail":"YACgEYG4kG4,0","ui-monospace":"YAD1aFjegN8,0","ui-sans-serif":"YACkoD1yZN0,0"}}');</script><script src="/_sdk/6542d56fbfe7a3eb.telemetry_sdk.js" integrity="sha512-ECdM0nK7EkwDuOqho2qxgyRQXyBHk9hZqRKMBr+Xsu6zjeHlt+qkO2N2YRiHN7Kg4e1fEHDhjIp4bGJYVypv1g=="></script>
-  <script src="https://cdn.tailwindcss.com/3.4.17" type="text/javascript"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.577.0/dist/umd/lucide.min.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com/3.4.17" type="text/javascript"></script>
   <script src="/_sdk/6c2ecc939521f244.data_sdk.js" type="text/javascript" integrity="sha512-gRx8s+XsZDN6mSIQu2sivLZysbV0WHhb5kXNUWlgVb5lCMU1foJYukyMEDPv8Tnoocb8iwqB4XdRrWc7oEGzIQ=="></script>
   <script src="/_sdk/6bf4579cc4c25151.editing_sdk.js" type="text/javascript" integrity="sha512-12l4JxmokLfWaGAHNO68l5Ev8ahSshUKfuxnYUB8nkqSU1+WiCvimsPjHzPjw1k7DcHL+eZ+K9Bld04jnd5gkg=="></script>
   <script src="/_sdk/ddcab3e45959c817.resizing_sdk.js" type="text/javascript" integrity="sha512-VAviUKfZVzugWBSeULYjSljTX+nb84wc6Zzbx5GQaQgh6X2ISSjXi8eIiCDGdwDh10esJMY0+QFQgUy9NcrTlQ=="></script>
@@ -10720,48 +10720,87 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
               catch (error) { showNotification('Konfigurasi tidak dapat disimpan di perangkat ini.', 'error'); }
             };
             const firebaseRuntime = useMemo(() => ({ app: null, auth: null, db: null, listeners: [] }), []);
-            const ensureFirebaseSdk = () => new Promise((resolve, reject) => {
-              if (window.firebase?.initializeApp && window.firebase?.auth && window.firebase?.database) { resolve(window.firebase); return; }
-              const existing = document.querySelector('script[data-tirtakala-firebase]');
-              const script = existing || document.createElement('script');
-              script.src = 'https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js';
-              script.dataset.tirtakalaFirebase = 'app';
-              script.onload = () => {
-                if (window.firebase?.auth && window.firebase?.database) { resolve(window.firebase); return; }
-                const auth = document.createElement('script'); auth.src = 'https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js'; auth.dataset.tirtakalaFirebase = 'auth';
-                auth.onload = () => { const database = document.createElement('script'); database.src = 'https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js'; database.dataset.tirtakalaFirebase = 'database'; database.onload = () => window.firebase?.auth && window.firebase?.database ? resolve(window.firebase) : reject(new Error('Firebase Authentication/Realtime Database SDK tidak tersedia.')); database.onerror = () => reject(new Error('Firebase Realtime Database SDK gagal dimuat.')); document.head.appendChild(database); };
-                auth.onerror = () => reject(new Error('Firebase Authentication SDK gagal dimuat.')); document.head.appendChild(auth);
-              };
-              script.onerror = () => reject(new Error('Firebase Web SDK resmi gagal dimuat. Periksa koneksi internet.'));
-              if (!existing) document.head.appendChild(script);
-              else if (existing.dataset.loaded === 'true') script.onload();
-            });
+            const ensureFirebaseSdk = () => {
+              if (!firebaseRuntime.sdkPromise) {
+                firebaseRuntime.sdkPromise = (async () => {
+                  const version = '10.12.2';
+                  const loadOnce = async (url, attempt) => {
+                    try {
+                      return await Promise.race([import(url), new Promise((_, reject) => setTimeout(() => reject(new Error('SDK load timed out')), 10000))]);
+                    } catch (error) {
+                      if (attempt > 1) throw error;
+                    }
+                    return new Promise((resolve, reject) => {
+                      const script = document.createElement('script');
+                      const timer = setTimeout(() => { script.remove(); reject(new Error('SDK load timed out')); }, 10000);
+                      script.type = 'module';
+                      script.src = url;
+                      script.onload = () => { clearTimeout(timer); reject(new Error('Module script loaded without exposing an importable SDK')); };
+                      script.onerror = () => { clearTimeout(timer); reject(new Error('SDK script request failed')); };
+                      document.head.appendChild(script);
+                    });
+                  };
+                  const loadModule = async name => {
+                    const url = `https://www.gstatic.com/firebasejs/${version}/firebase-${name}.js`;
+                    try { return await loadOnce(url, 1); } catch (firstError) {
+                      try { return await loadOnce(url, 2); } catch (error) { throw new Error(`Firebase ${name} SDK gagal dimuat: ${error.message || firstError.message}`); }
+                    }
+                  };
+                  const [app, auth, database] = await Promise.all([loadModule('app'), loadModule('auth'), loadModule('database')]);
+                  if (!app?.initializeApp || !app?.getApps || !auth?.getAuth || !auth?.setPersistence || !auth?.browserLocalPersistence || !database?.getDatabase || !database?.ref || !database?.get || !database?.onValue || !database?.update || !database?.remove) {
+                    throw new Error('SDK Firebase termuat tetapi API App, Auth, atau Realtime Database yang diperlukan tidak tersedia.');
+                  }
+                  return { app, auth, database };
+                })().catch(error => { firebaseRuntime.sdkPromise = null; throw error; });
+              }
+              return firebaseRuntime.sdkPromise;
+            };
             const getFirebase = async () => {
               const missing = validateFirebaseConfig(firebaseConfig);
               if (missing.length) throw new Error(`Konfigurasi wajib belum lengkap: ${missing.join(', ')}.`);
               const sdk = await ensureFirebaseSdk();
+              const config = Object.fromEntries(firebaseFields.map(key => [key, String(firebaseConfig[key] || '').trim()]));
               if (!firebaseRuntime.app) {
-                firebaseRuntime.app = (sdk.apps || []).find(item => item.name === 'tirtakala') || sdk.initializeApp(Object.fromEntries(firebaseFields.map(key => [key, String(firebaseConfig[key] || '').trim()])), 'tirtakala');
-                firebaseRuntime.auth = firebaseRuntime.app.auth();
-                await firebaseRuntime.auth.setPersistence(sdk.auth.Auth.Persistence.LOCAL);
-                firebaseRuntime.db = firebaseRuntime.app.database();
-                try { firebaseRuntime.db.ref('.info/connected'); } catch (error) { throw new Error('Realtime Database URL tidak dapat ditemukan dari project Firebase ini. Aktifkan/konfigurasikan Realtime Database atau gunakan konfigurasi database yang sudah disediakan project.'); }
+                const existing = sdk.app.getApps().find(item => item.name === 'tirtakala');
+                firebaseRuntime.app = existing || sdk.app.initializeApp(config, 'tirtakala');
+                firebaseRuntime.auth = sdk.auth.getAuth(firebaseRuntime.app);
+                firebaseRuntime.modules = sdk;
+              }
+              if (!firebaseRuntime.authReady) {
+                firebaseRuntime.authReady = Promise.resolve(firebaseRuntime.auth.currentUser).then(() => firebaseRuntime.auth);
+              }
+              await firebaseRuntime.authReady;
+              if (!firebaseRuntime.db) {
+                try { firebaseRuntime.db = sdk.database.getDatabase(firebaseRuntime.app); }
+                catch (error) { throw new Error(`Firebase App/Auth tersedia, tetapi Realtime Database belum dapat dibuat: ${error.message || 'project belum menyediakan konfigurasi database.'} Pastikan Realtime Database sudah diaktifkan dan konfigurasi project valid; URL database tidak ditebak.`); }
               }
               return firebaseRuntime;
             };
+            const firebaseErrorMessage = error => {
+              const code = String(error?.code || '');
+              if (code === 'auth/operation-not-allowed') return 'Firebase Authentication belum mengaktifkan metode masuk yang diperlukan.';
+              if (code === 'auth/unauthorized-domain') return 'Domain aplikasi belum diizinkan pada Firebase Authentication.';
+              if (code === 'auth/invalid-api-key' || code === 'app/invalid-project-id') return 'Project Firebase tidak ditemukan atau konfigurasi project tidak valid.';
+              if (code === 'database/permission-denied') return 'Akses ditolak Security Rules. Gunakan akun Firebase yang berwenang dan periksa aturan akses.';
+              if (code === 'database/invalid-url' || /database/i.test(error?.message || '')) return 'Realtime Database belum dibuat/diaktifkan atau URL RTDB valid belum tersedia. URL tidak ditebak dan database baru tidak dibuat.';
+              if (code.startsWith('auth/')) return `Autentikasi Firebase gagal (${code}). Periksa metode masuk dan akun yang berwenang.`;
+              return `Koneksi Firebase gagal${code ? ` (${code})` : ''}: ${error?.message || 'periksa konfigurasi dan Security Rules.'}`;
+            };
             const readOnlyFirebaseCheck = async () => {
               const runtime = await getFirebase();
-              if (!runtime.auth.currentUser) await runtime.auth.signInAnonymously();
-              const connectedRef = runtime.db.ref('.info/connected');
-              await new Promise((resolve, reject) => {
-                let done = false;
-                const finish = (fn, value) => { if (done) return; done = true; clearTimeout(timer); connectedRef.off('value', listener); fn(value); };
-                const listener = snapshot => snapshot.val() === true && finish(resolve, true);
-                const timer = setTimeout(() => finish(reject, new Error('Realtime Database tidak mengonfirmasi koneksi.')), 8000);
-                connectedRef.on('value', listener, error => finish(reject, error));
+              if (!runtime.auth.currentUser) throw new Error('Masuk dengan akun Firebase yang berwenang sebelum menguji koneksi. Login lokal aplikasi bukan autentikasi Firebase.');
+              const { database } = runtime.modules;
+              const connected = await new Promise((resolve, reject) => {
+                const connectedRef = database.ref(runtime.db, '.info/connected');
+                let unsubscribe = () => {};
+                const timer = setTimeout(() => { unsubscribe(); reject(new Error('Realtime Database tidak mengonfirmasi koneksi.')); }, 8000);
+                unsubscribe = database.onValue(connectedRef, snapshot => { if (snapshot.val() === true) { clearTimeout(timer); unsubscribe(); resolve(true); } }, error => { clearTimeout(timer); unsubscribe(); reject(error); });
               });
-              const rootSnapshot = await runtime.db.ref('tirtakala').once('value');
-              return { runtime, rootSnapshot };
+              const tenantId = runtime.auth.currentUser.getIdTokenResult ? (await runtime.auth.currentUser.getIdTokenResult()).claims.tenantId : null;
+              if (!tenantId) throw new Error('Akun Firebase tidak memiliki tenantId pada custom claims; akses organisasi tidak diberikan.');
+              const rootSnapshot = await database.get(database.ref(runtime.db, `organizations/${tenantId}`));
+              if (!rootSnapshot.exists()) throw new Error('Root organisasi bersama belum tersedia. Tidak ada root baru yang dibuat.');
+              return { runtime, rootSnapshot, tenantId, connected };
             };
             const testFirebaseConnection = async () => {
               setFirebaseStatus(current => ({ ...current, connection: 'Menyinkronkan', message: 'Memeriksa autentikasi dan akses baca tanpa menulis data bisnis…' }));
@@ -10770,27 +10809,71 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
                 setFirebaseStatus(current => ({ ...current, connection: 'Online', message: rootSnapshot.exists() ? 'Autentikasi dan baca root bersama berhasil. Belum ada data bisnis yang ditulis.' : 'Autentikasi berhasil, tetapi root bersama belum tersedia; tidak ada data yang ditulis.' }));
                 showNotification('Uji baca Firebase berhasil; tidak ada data bisnis yang ditulis.');
               } catch (error) {
-                const message = error?.code === 'auth/operation-not-allowed' ? 'Authentication anonim belum diaktifkan; periksa Authentication dan Security Rules.' : error?.code === 'database/invalid-url' || /databaseURL|database url/i.test(error?.message || '') ? 'Realtime Database URL tidak dapat ditemukan dari project Firebase ini. Aktifkan/konfigurasikan Realtime Database atau gunakan konfigurasi database yang sudah disediakan project.' : `Koneksi baca gagal: ${error?.message || 'Periksa Firebase Authentication dan Security Rules.'}`;
-                setFirebaseStatus(current => ({ ...current, connection: 'Offline', message })); showNotification(message, 'error');
-              }
-            };
-            const connectFirebase = async () => {
-              setFirebaseStatus(current => ({ ...current, connection: 'Menyinkronkan', message: 'Memverifikasi akses cloud sebelum mengaktifkan sinkronisasi…' }));
-              try {
-                const { runtime, rootSnapshot } = await readOnlyFirebaseCheck();
-                if (!rootSnapshot.exists()) throw new Error('Root bersama tirtakala belum tersedia. Tidak ada root baru yang dibuat; siapkan root sesuai Security Rules aplikasi.');
-                setFirebaseStatus(current => ({ ...current, connection: 'Online', bootstrap: 'Root bersama terbaca', listener: 'Terhubung', lastSync: new Date().toLocaleString('id-ID'), message: 'Firebase Auth, baca root bersama, dan koneksi realtime berhasil.' }));
-                showNotification('Koneksi Firebase berhasil diverifikasi.');
-              } catch (error) {
-                const message = error?.code === 'auth/operation-not-allowed' ? 'Authentication anonim belum diaktifkan; periksa Authentication dan Security Rules.' : error?.code === 'database/invalid-url' || /databaseURL|database url/i.test(error?.message || '') ? 'Realtime Database URL tidak dapat ditemukan dari project Firebase ini. Aktifkan/konfigurasikan Realtime Database atau gunakan konfigurasi database yang sudah disediakan project.' : `Sinkronisasi tertunda: ${error?.message || 'akses Firebase gagal.'}`;
+                const message = firebaseErrorMessage(error);
                 setFirebaseStatus(current => ({ ...current, connection: 'Offline', listener: 'Tidak aktif', message })); showNotification(message, 'error');
               }
             };
-            const generateSharedCode = () => {
-              const bytes = new Uint8Array(8);
-              if (window.crypto && window.crypto.getRandomValues) window.crypto.getRandomValues(bytes); else { showNotification('Pembuat kode aman tidak tersedia di browser ini.', 'error'); return; }
-              const code = `TIRTA-${Array.from(bytes, byte => '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'[byte % 36]).join('')}`;
-              try { localStorage.setItem('tirtakala-shared-code-v1', code); setFirebaseCode(code); showNotification(firebaseStatus.connection === 'Online' ? 'Kode undangan dibuat.' : 'Kode undangan dibuat. Firebase belum terhubung; gunakan Uji Koneksi lalu Hubungkan Firebase.'); } catch (error) { showNotification('Kode tidak dapat disimpan di perangkat ini.', 'error'); }
+            const connectFirebase = async () => {
+              setFirebaseStatus(current => ({ ...current, connection: 'Menyinkronkan', message: 'Memverifikasi akun, akses baca, organisasi bersama, dan Security Rules…' }));
+              try {
+                const { runtime, rootSnapshot, tenantId } = await readOnlyFirebaseCheck();
+                const { database } = runtime.modules;
+                const listenerRef = database.ref(runtime.db, `organizations/${tenantId}/appData`);
+                firebaseRuntime.listeners.forEach(unsubscribe => { try { unsubscribe(); } catch (error) {} });
+                firebaseRuntime.listeners = [database.onValue(listenerRef, snapshot => {
+                  const cloudData = snapshot.val();
+                  if (!cloudData || typeof cloudData !== 'object') return;
+                  try {
+                    if (Array.isArray(cloudData.pelanggan)) setPelanggan(cloudData.pelanggan);
+                    if (Array.isArray(cloudData.meteran)) setMeteran(cloudData.meteran);
+                    if (Array.isArray(cloudData.tagihan)) setTagihan(cloudData.tagihan);
+                    if (Array.isArray(cloudData.keuangan)) setKeuangan(cloudData.keuangan);
+                    if (Array.isArray(cloudData.wilayah)) setWilayah(cloudData.wilayah);
+                    if (Array.isArray(cloudData.tunggakanAwal)) setTunggakanAwal(cloudData.tunggakanAwal);
+                  } catch (error) { setFirebaseStatus(current => ({ ...current, message: 'Data cloud diterima, tetapi formatnya tidak dapat diterapkan.' })); }
+                }, error => { const message = firebaseErrorMessage(error); setFirebaseStatus(current => ({ ...current, connection: 'Offline', listener: 'Tidak aktif', message })); } )];
+                const tenantKey = `tirtakala-tenant-${runtime.auth.currentUser.uid}`;
+                localStorage.setItem(tenantKey, tenantId);
+                setFirebaseStatus(current => ({ ...current, connection: 'Online', bootstrap: 'Organisasi bersama terbaca', listener: 'Terhubung', lastSync: new Date().toLocaleString('id-ID'), message: 'Firebase membaca ruang organisasi bersama. Perubahan hanya dapat disimpan sesuai Security Rules.' }));
+                showNotification('Koneksi Firebase dan listener realtime berhasil.');
+              } catch (error) {
+                const message = firebaseErrorMessage(error);
+                setFirebaseStatus(current => ({ ...current, connection: 'Offline', listener: 'Tidak aktif', message })); showNotification(message, 'error');
+              }
+            };
+            const [accessCodeInput, setAccessCodeInput] = useState('');
+            const [accessCodeStatus, setAccessCodeStatus] = useState('');
+            const generateSharedCode = async () => {
+              try {
+                const { runtime, tenantId } = await readOnlyFirebaseCheck();
+                const { database } = runtime.modules;
+                const bytes = new Uint8Array(4);
+                if (!window.crypto?.getRandomValues) throw new Error('Pembuat kode aman tidak tersedia di browser ini.');
+                window.crypto.getRandomValues(bytes);
+                const code = `TIRTA-${Array.from(bytes, byte => '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'[byte % 36]).join('')}`;
+                const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
+                await database.set(database.ref(runtime.db, `organizations/${tenantId}/invites/${code}`), { tenantId, expiresAt, active: true, createdBy: runtime.auth.currentUser.uid });
+                setFirebaseCode(code); setAccessCodeStatus('Kode undangan berhasil dibuat dan berlaku 24 jam.');
+                showNotification('Kode undangan Firebase berhasil dibuat.');
+              } catch (error) { const message = firebaseErrorMessage(error); setAccessCodeStatus(message); showNotification(message, 'error'); }
+            };
+            const joinWithSharedCode = async () => {
+              const code = accessCodeInput.trim().toUpperCase();
+              if (!/^TIRTA-[A-Z0-9]{8}$/.test(code)) { setAccessCodeStatus('Masukkan kode dengan format TIRTA-XXXXXXXX.'); return; }
+              try {
+                const runtime = await getFirebase();
+                if (!runtime.auth.currentUser) throw new Error('Masuk dengan akun Firebase yang berwenang sebelum menggunakan kode.');
+                const { database } = runtime.modules;
+                const snapshot = await database.get(database.ref(runtime.db, `organizations/*/invites/${code}`));
+                if (!snapshot.exists()) { setAccessCodeStatus('Kode tidak ditemukan atau perangkat ini tidak berwenang membacanya.'); return; }
+                const invite = snapshot.val();
+                if (!invite.active || Number(invite.expiresAt) <= Date.now()) { setAccessCodeStatus('Kode undangan sudah kedaluwarsa atau dinonaktifkan.'); return; }
+                const claims = (await runtime.auth.currentUser.getIdTokenResult()).claims;
+                if (claims.tenantId !== invite.tenantId) throw new Error('Security Rules menolak bergabung: akun Firebase belum diberi akses ke organisasi ini.');
+                localStorage.setItem(`tirtakala-tenant-${runtime.auth.currentUser.uid}`, invite.tenantId);
+                setAccessCodeStatus('Kode diterima. Sambungkan ulang untuk memuat data organisasi bersama.');
+                showNotification('Kode valid; akses tetap mengikuti akun dan Security Rules.');
+              } catch (error) { const message = firebaseErrorMessage(error); setAccessCodeStatus(message); showNotification(message, 'error'); }
             };
             const copySharedCode = async () => { try { await navigator.clipboard.writeText(firebaseCode); showNotification('Kode berhasil disalin.'); } catch (error) { showNotification('Tidak dapat menyalin kode dari browser ini.', 'error'); } };
             const validateAndRestoreBackup = () => {
@@ -11047,7 +11130,7 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
 
                         <div className="mt-5 flex flex-wrap justify-end gap-2"><button type="button" onClick={saveFirebaseConfig} className="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">Simpan</button><button type="button" onClick={testFirebaseConnection} className="rounded-lg border border-teal-700 px-4 py-2.5 text-sm font-bold text-teal-800 hover:bg-teal-50">Uji Koneksi</button><button type="button" onClick={connectFirebase} className="rounded-lg bg-amber-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-amber-700">Hubungkan Firebase</button></div>
                       </div>
-                      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"><h3 className="font-bold text-lg text-slate-800">Sinkronisasi Awan & Multi-Device</h3><div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4" role="status" aria-live="polite"><p className="font-bold text-amber-900">{firebaseStatus.connection} · {firebaseStatus.message || 'Simpan konfigurasi, uji koneksi baca, lalu hubungkan Firebase.'}</p></div><div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"><div className="rounded-xl border bg-slate-50 p-4"><p className="text-xs font-bold uppercase text-slate-500">Project / database host</p><p className="mt-1 break-all text-sm font-semibold">{firebaseConfig.projectId || 'Belum dikonfigurasi'}{firebaseConfig.databaseURL ? ` · ${String(firebaseConfig.databaseURL).replace(/^https?:\/\//, '').split('/')[0]}` : ''}</p></div><div className="rounded-xl border bg-slate-50 p-4"><p className="text-xs font-bold uppercase text-slate-500">Bootstrap cloud</p><p className="mt-1 text-sm">{firebaseStatus.bootstrap}</p></div><div className="rounded-xl border bg-slate-50 p-4"><p className="text-xs font-bold uppercase text-slate-500">Realtime listener</p><p className="mt-1 text-sm">{firebaseStatus.listener}</p></div><div className="rounded-xl border bg-slate-50 p-4"><p className="text-xs font-bold uppercase text-slate-500">Antrean offline</p><p className="mt-1 text-sm">{firebaseStatus.queue}</p></div><div className="rounded-xl border bg-slate-50 p-4"><p className="text-xs font-bold uppercase text-slate-500">Sinkronisasi terakhir</p><p className="mt-1 text-sm">{firebaseStatus.lastSync}</p></div></div><div className="mt-5 border-t border-slate-100 pt-4"><h4 className="font-bold text-slate-800">Kode akses multi-device</h4><p className="mt-1 text-xs text-slate-500">Kode ini hanya pengenal/undangan organisasi, bukan login atau pengganti Authentication dan Security Rules.</p><div className="mt-3 flex flex-wrap items-center gap-2"><button type="button" onClick={generateSharedCode} className="rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-bold text-white hover:bg-teal-800">Generate Kode</button>{firebaseCode && <><code className="rounded-lg border bg-slate-50 px-4 py-2.5 font-mono font-bold tracking-wider text-slate-800">{firebaseCode}</code><button type="button" onClick={copySharedCode} className="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">Salin</button></>}</div></div></div>
+                      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"><h3 className="font-bold text-lg text-slate-800">Sinkronisasi Awan & Multi-Device</h3><p className="mt-1 text-xs text-slate-500">Kode akses menghubungkan perangkat ke ruang data bersama. Login Firebase dan Security Rules tetap diperlukan.</p><div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4" role="status" aria-live="polite"><p className="font-bold text-amber-900">{firebaseStatus.connection} · {firebaseStatus.message || 'Simpan konfigurasi, uji koneksi baca, lalu hubungkan Firebase.'}</p></div><div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"><div className="rounded-xl border bg-slate-50 p-4"><p className="text-xs font-bold uppercase text-slate-500">Project / database host</p><p className="mt-1 break-all text-sm font-semibold">{firebaseConfig.projectId || 'Belum dikonfigurasi'}{firebaseConfig.databaseURL ? ` · ${String(firebaseConfig.databaseURL).replace(/^https?:\/\//, '').split('/')[0]}` : ''}</p></div><div className="rounded-xl border bg-slate-50 p-4"><p className="text-xs font-bold uppercase text-slate-500">Bootstrap cloud</p><p className="mt-1 text-sm">{firebaseStatus.bootstrap}</p></div><div className="rounded-xl border bg-slate-50 p-4"><p className="text-xs font-bold uppercase text-slate-500">Realtime listener</p><p className="mt-1 text-sm">{firebaseStatus.listener}</p></div><div className="rounded-xl border bg-slate-50 p-4"><p className="text-xs font-bold uppercase text-slate-500">Antrean offline</p><p className="mt-1 text-sm">{firebaseStatus.queue}</p></div><div className="rounded-xl border bg-slate-50 p-4"><p className="text-xs font-bold uppercase text-slate-500">Sinkronisasi terakhir</p><p className="mt-1 text-sm">{firebaseStatus.lastSync}</p></div></div><div className="mt-5 border-t border-slate-100 pt-4"><h4 className="font-bold text-slate-800">Akses Multi-Device</h4><p className="mt-1 text-xs text-slate-500">Kode hanya menunjuk organisasi yang sudah ada; login Firebase dan Security Rules tetap menentukan izin.</p><div className="mt-3 flex flex-wrap items-center gap-2"><button type="button" onClick={generateSharedCode} className="rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-bold text-white hover:bg-teal-800">Generate Kode</button>{firebaseCode && <><code className="rounded-lg border bg-slate-50 px-4 py-2.5 font-mono font-bold tracking-wider text-slate-800">{firebaseCode}</code><button type="button" onClick={copySharedCode} className="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">Salin</button></>}</div><div className="mt-4 flex flex-wrap gap-2"><label htmlFor="join-access-code" className="sr-only">Masukkan Kode Akses</label><input id="join-access-code" value={accessCodeInput} onChange={event => setAccessCodeInput(event.target.value.toUpperCase())} placeholder="TIRTA-XXXXXXXX" className="min-w-0 flex-1 rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-teal-500"/><button type="button" onClick={joinWithSharedCode} className="rounded-lg bg-slate-800 px-4 py-2.5 text-sm font-bold text-white">Gabung dengan Kode</button></div>{accessCodeStatus && <p role="status" className="mt-2 text-xs text-slate-600">{accessCodeStatus}</p>}</div></div>
                     </section>
                   )}
                 </div>
