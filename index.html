@@ -9050,14 +9050,50 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
         }
 
         function TirtakalaApp() {
-          const [activeMenu, setActiveMenu] = useState('dashboard');
+          const [activeMenu, setActiveMenu] = useState(() => {
+            try {
+              const raw = localStorage.getItem('tirtakala-app-state-v2');
+              const parsed = raw ? JSON.parse(raw) : null;
+              const data = parsed && parsed.schemaVersion === 2 && parsed.data ? parsed.data : parsed;
+              return data && typeof data.activeMenu === 'string' ? data.activeMenu : 'dashboard';
+            } catch (error) {
+              return 'dashboard';
+            }
+          });
           const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
           const [isSidebarMinimized, setIsSidebarMinimized] = useState(() => savedAppState && typeof savedAppState.isSidebarMinimized === 'boolean' ? savedAppState.isSidebarMinimized : localStorage.getItem('tirtakala-sidebar-minimized') === 'true');
-          const [currentUser, setCurrentUser] = useState(null); // Null triggers login page
+          const [currentUser, setCurrentUser] = useState(() => {
+            try {
+              const raw = localStorage.getItem('tirtakala-current-user-v1');
+              const user = raw ? JSON.parse(raw) : null;
+              return user && user.id && user.username ? user : null;
+            } catch (error) {
+              return null;
+            }
+          }); // Dipulihkan otomatis setelah refresh
 
           useEffect(() => {
             localStorage.setItem('tirtakala-sidebar-minimized', String(isSidebarMinimized));
           }, [isSidebarMinimized]);
+
+          // Simpan sesi login sehingga refresh tidak kembali ke halaman login.
+          useEffect(() => {
+            try {
+              if (currentUser) localStorage.setItem('tirtakala-current-user-v1', JSON.stringify(currentUser));
+              else localStorage.removeItem('tirtakala-current-user-v1');
+            } catch (error) {}
+          }, [currentUser]);
+
+          // Jika data pengguna berubah, gunakan profil terbaru; jika akun sudah tidak ada, keluarkan.
+          useEffect(() => {
+            if (!currentUser || !Array.isArray(users)) return;
+            const latestUser = users.find(user => user.id === currentUser.id || user.username === currentUser.username);
+            if (latestUser) {
+              if (JSON.stringify(latestUser) !== JSON.stringify(currentUser)) setCurrentUser(latestUser);
+            } else {
+              setCurrentUser(null);
+            }
+          }, [users]);
           const [currentPeriode, setCurrentPeriode] = useState(savedAppState && typeof savedAppState.currentPeriode === 'string' ? savedAppState.currentPeriode : '2026-08');
 
           // Sticky Global Filter State for Wilayah
@@ -9101,7 +9137,7 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
           const [roles, setRoles] = useState(savedAppState && Array.isArray(savedAppState.roles) ? savedAppState.roles : initialRoles);
           const persistAppSnapshot = () => {
             try {
-              const data = { wilayah, pelanggan, meteran, tunggakanAwal, tunggakanAwalInitialized, tagihan, keuangan, profilPAM, auditLogData, users, roles, currentPeriode, globalWilayahFilter, isSidebarMinimized, reportPrintMode: document.body.dataset.reportPrintMode || 'portrait' };
+              const data = { wilayah, pelanggan, meteran, tunggakanAwal, tunggakanAwalInitialized, tagihan, keuangan, profilPAM, auditLogData, users, roles, currentPeriode, globalWilayahFilter, activeMenu, isSidebarMinimized, reportPrintMode: document.body.dataset.reportPrintMode || 'portrait' };
               localStorage.setItem(STORAGE_KEY, JSON.stringify({ schemaVersion: 2, data }));
               return true;
             } catch (error) {
@@ -9109,7 +9145,7 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
               return false;
             }
           };
-          useEffect(() => { persistAppSnapshot(); }, [wilayah, pelanggan, meteran, tunggakanAwal, tunggakanAwalInitialized, tagihan, keuangan, profilPAM, auditLogData, users, roles, currentPeriode, globalWilayahFilter, isSidebarMinimized]);
+          useEffect(() => { persistAppSnapshot(); }, [wilayah, pelanggan, meteran, tunggakanAwal, tunggakanAwalInitialized, tagihan, keuangan, profilPAM, auditLogData, users, roles, currentPeriode, globalWilayahFilter, activeMenu, isSidebarMinimized]);
           useEffect(() => { if (savedAppState) showNotification('Data terakhir berhasil dimuat.'); }, []);
           // ===== Sinkronisasi multi-perangkat (real-time, per-record) =====
           const pamSyncLatest = useRef({});
@@ -10525,13 +10561,22 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
               const data = [];
               
               targetPelanggan.forEach(pel => {
-                 const belumLunas = tagihan.filter(t => t.pelangganId === pel.id && t.status !== 'Lunas');
-                 if(belumLunas.length > 0) {
-                    belumLunas.sort((a,b) => a.periode.localeCompare(b.periode));
-                    const totalTunggakan = belumLunas.reduce((sum, item) => sum + (item.total - (item.dibayar || 0)), 0);
-                    data.push({ pelanggan: pel, tagihanList: belumLunas, totalTunggakan });
-                 } else {
-                    data.push({ pelanggan: pel, tagihanList: [], totalTunggakan: 0 }); // Show all customers
+                 // Kasir hanya menampilkan pelanggan yang belum pernah membayar.
+                 // Pembayaran sebagian maupun lunas sama-sama disembunyikan.
+                 const belumDibayar = tagihan
+                   .filter(t =>
+                     t.pelangganId === pel.id &&
+                     t.status !== 'Lunas' &&
+                     Number(t.dibayar || 0) <= 0
+                   )
+                   .sort((a,b) => a.periode.localeCompare(b.periode));
+
+                 if (belumDibayar.length > 0) {
+                    const totalTunggakan = belumDibayar.reduce(
+                      (sum, item) => sum + Math.max(0, item.total - (item.dibayar || 0)),
+                      0
+                    );
+                    data.push({ pelanggan: pel, tagihanList: belumDibayar, totalTunggakan });
                  }
               });
               return data;
@@ -10544,6 +10589,19 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
               const pelData = paymentModal;
               
               const sisaTagihanCurrent = t.total - (t.dibayar || 0);
+              const alreadyPaid = Number(t.dibayar || 0) > 0 || t.status === 'Lunas';
+              const existingPayment = keuangan.some(row =>
+                row.tagihanId === t.id &&
+                row.tipe === 'Pemasukan' &&
+                row.kategori === 'Pembayaran Tagihan'
+              );
+
+              if (alreadyPaid || existingPayment) {
+                showNotification("Tagihan ini sudah memiliki pembayaran dan tidak dapat diinput lagi dari kasir.", "error");
+                setPaymentModal(null);
+                setPayAmount('');
+                return;
+              }
 
               if (isNaN(nominal) || nominal <= 0) { showNotification("Nominal tidak valid!", "error"); return; }
               if (nominal > sisaTagihanCurrent) { showNotification(`Nominal kelebihan! Sisa tagihan ini hanya ${formatRupiah(sisaTagihanCurrent)}`, "error"); return; }
@@ -11188,7 +11246,7 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
               } catch (error) { showNotification(`Backup ditolak: ${error.message}`, 'error'); }
             };
             const handleBackup = () => {
-              const appState = { profilPAM, wilayah, pelanggan, meteran, tunggakanAwal, tunggakanAwalInitialized, tagihan, keuangan, users, roles, auditLogData, currentPeriode, globalWilayahFilter, isSidebarMinimized, reportPrintMode: document.body.dataset.reportPrintMode || 'portrait', localStorage: Object.fromEntries(Array.from({ length: localStorage.length }, (_, index) => localStorage.key(index)).filter(Boolean).map(key => [key, localStorage.getItem(key)])) };
+              const appState = { profilPAM, wilayah, pelanggan, meteran, tunggakanAwal, tunggakanAwalInitialized, tagihan, keuangan, users, roles, auditLogData, currentPeriode, globalWilayahFilter, activeMenu, isSidebarMinimized, reportPrintMode: document.body.dataset.reportPrintMode || 'portrait', localStorage: Object.fromEntries(Array.from({ length: localStorage.length }, (_, index) => localStorage.key(index)).filter(Boolean).map(key => [key, localStorage.getItem(key)])) };
               const backup = { format: 'tirtakala-full-backup', formatVersion: 1, createdAt: new Date().toISOString(), counts: { pelanggan: pelanggan.length, meteran: meteran.length, tunggakanAwal: tunggakanAwal.length, tagihan: tagihan.length, keuangan: keuangan.length, wilayah: wilayah.length, users: users.length, roles: roles.length, auditLogData: auditLogData.length }, data: appState };
               const dataStr = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(backup, null, 2));
               const anchor = document.createElement('a'); anchor.href = dataStr; anchor.download = `backup-tirtakala-${new Date().toISOString().split('T')[0]}.json`; document.body.appendChild(anchor); anchor.click(); anchor.remove();
@@ -11549,7 +11607,17 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
             const [paymentAmount, setPaymentAmount] = useState('');
             const [paymentDate, setPaymentDate] = useState(new Date().toISOString().slice(0, 10));
             const [paymentSearch, setPaymentSearch] = useState('');
-            const [paymentRegion, setPaymentRegion] = useState('all');
+            const paymentRegionStorageKey = `tirtakala-payment-region-v1-${currentUser?.id || currentUser?.username || 'default'}`;
+            const [paymentRegion, setPaymentRegion] = useState(() => {
+              try {
+                const saved = localStorage.getItem(paymentRegionStorageKey);
+                if (saved) return saved;
+              } catch (error) {}
+              return permittedIds && permittedIds.length === 1 ? permittedIds[0] : 'all';
+            });
+            useEffect(() => {
+              try { localStorage.setItem(paymentRegionStorageKey, paymentRegion); } catch (error) {}
+            }, [paymentRegion, paymentRegionStorageKey]);
             const [reportMonth, setReportMonth] = useState(currentPeriode.split('-')[1] || '01');
             const [reportYear, setReportYear] = useState(currentPeriode.split('-')[0] || '2026');
             const [reportRegion, setReportRegion] = useState('all');
@@ -11562,7 +11630,18 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
             const monthNames = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
             const reportPeriod = `${reportYear}-${reportMonth}`;
             const paymentCustomers = allowedCustomers.filter(customer => customer.peran === 'Pelanggan' && (paymentRegion === 'all' || customer.wilayahId === paymentRegion) && customer.nama.toLocaleLowerCase('id-ID').includes(paymentSearch.toLocaleLowerCase('id-ID')));
-            const paymentBills = paymentCustomers.flatMap(customer => tagihan.filter(bill => bill.pelangganId === (customer.idPelanggan || customer.id)).map(bill => ({ ...bill, customer })));
+            // Hanya tampilkan tagihan yang belum pernah menerima pembayaran.
+            // Setelah bayar sebagian maupun lunas, tagihan langsung hilang dari kasir
+            // agar tidak terjadi input pembayaran ganda.
+            const paymentBills = paymentCustomers.flatMap(customer =>
+              tagihan
+                .filter(bill =>
+                  bill.pelangganId === (customer.idPelanggan || customer.id) &&
+                  bill.status !== 'Lunas' &&
+                  Number(bill.dibayar || 0) <= 0
+                )
+                .map(bill => ({ ...bill, customer }))
+            );
             const filteredCustomers = allowedCustomers.filter(customer => customer.nama.toLocaleLowerCase('id-ID').includes(query.toLocaleLowerCase('id-ID')));
             const inputMeterCustomers = filteredCustomers.filter(customer => regionFilter === 'all' || customer.wilayahId === regionFilter);
             const visibleMeterHistory = meteran.filter(row => allowedCustomers.some(customer => (customer.idPelanggan || customer.id) === row.pelangganId) && (regionFilter === 'all' || allowedCustomers.some(customer => (customer.idPelanggan || customer.id) === row.pelangganId && customer.wilayahId === regionFilter)));
@@ -11605,6 +11684,18 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
               const parsedDate = new Date(`${paymentDate}T00:00:00`);
               if (!target || !Number.isFinite(amount) || amount <= 0 || amount > remaining) { showNotification('Total Bayar harus positif dan tidak boleh melebihi sisa tagihan.', 'error'); return; }
               if (!paymentDate || Number.isNaN(parsedDate.getTime()) || parsedDate.toISOString().slice(0, 10) !== paymentDate) { showNotification('Tanggal pembayaran tidak valid.', 'error'); return; }
+
+              const alreadyPaid = Number(target.dibayar || 0) > 0 || target.status === 'Lunas';
+              const existingPayment = keuangan.some(row =>
+                row.tagihanId === target.id &&
+                row.tipe === 'Pemasukan' &&
+                row.kategori === 'Pembayaran Tagihan'
+              );
+              if (alreadyPaid || existingPayment) {
+                showNotification('Tagihan ini sudah memiliki pembayaran. Pelanggan disembunyikan dari daftar agar tidak terjadi pembayaran ganda.', 'error');
+                setSelectedBill(null);
+                return;
+              }
               const paid = Number(target.dibayar || 0) + amount;
               setTagihan(rows => rows.map(row => row.id === target.id ? { ...row, dibayar: paid, status: paid >= Number(row.total) ? 'Lunas' : 'Sebagian' } : row));
               const transaction = { id: `K${Date.now()}`, trx: `TRX-${Date.now().toString().slice(-6)}`, tanggal: paymentDate, tipe: 'Pemasukan', kategori: 'Pembayaran Tagihan', nominal: amount, ket: `Bayar Tagihan ${selectedBill.customer.nama} (Prd: ${target.periode})`, tagihanId: target.id };
