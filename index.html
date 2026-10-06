@@ -1697,17 +1697,24 @@ function TirtakalaApp() {
       _useState56 = _slicedToArray(_useState55, 2),
       editData = _useState56[0],
       setEditData = _useState56[1];
-    var targetPelanggan = pelanggan.filter(function (p) {
+    var allTargetPelanggan = pelanggan.filter(function (p) {
       return p.wilayahId === selectedWilayah && p.aktif;
-    });
-    var inputtedCount = targetPelanggan.filter(function (p) {
+    }).sort(compareCustomerIds);
+    var inputtedCount = allTargetPelanggan.filter(function (p) {
       return meteran.find(function (m) {
         return m.pelangganId === p.id && m.periode === currentPeriode;
       });
     }).length;
+    var targetPelanggan = allTargetPelanggan.filter(function (p) {
+      return !meteran.find(function (m) {
+        return m.pelangganId === p.id && m.periode === currentPeriode;
+      });
+    });
     useEffect(function () {
-      if (globalWilayahFilter !== 'all') setSelectedWilayah(globalWilayahFilter);
-    }, [globalWilayahFilter]);
+      if (globalWilayahFilter !== 'all' && wilayah.some(function (w) { return w.id === globalWilayahFilter; })) {
+        setSelectedWilayah(globalWilayahFilter);
+      }
+    }, [globalWilayahFilter, wilayah]);
     var handleSaveRow = function handleSaveRow(pelId, meterAwal) {
       var _pelanggan$find;
       var meterAkhir = parseInt(inputs[pelId]);
@@ -1866,7 +1873,6 @@ function TirtakalaApp() {
       value: selectedWilayah,
       onChange: function onChange(e) {
         setSelectedWilayah(e.target.value);
-        setGlobalWilayahFilter(e.target.value);
       }
     }, wilayah.map(function (w) {
       return /*#__PURE__*/React.createElement("option", {
@@ -1990,7 +1996,7 @@ function TirtakalaApp() {
     }, /*#__PURE__*/React.createElement(Icon, {
       path: ICONS.alertTriangle,
       className: "w-8 h-8 mx-auto mb-2 opacity-50"
-    }), "Tidak ada pelanggan aktif di wilayah ini.")))))));
+    }), allTargetPelanggan.length === 0 ? "Tidak ada pelanggan aktif di wilayah ini." : "Semua pelanggan pada wilayah ini sudah diinput untuk periode ini.")))))));
   };
   var TagihanView = function TagihanView() {
     var handleGenerateTagihan = function handleGenerateTagihan() {
@@ -5806,17 +5812,24 @@ function TirtakalaApp() {
       _useState58 = _slicedToArray(_useState57, 2),
       editData = _useState58[0],
       setEditData = _useState58[1];
-    var targetPelanggan = pelanggan.filter(function (p) {
+    var allTargetPelanggan = pelanggan.filter(function (p) {
       return p.wilayahId === selectedWilayah && p.aktif;
-    });
-    var inputtedCount = targetPelanggan.filter(function (p) {
+    }).sort(compareCustomerIds);
+    var inputtedCount = allTargetPelanggan.filter(function (p) {
       return meteran.find(function (m) {
         return m.pelangganId === p.id && m.periode === currentPeriode;
       });
     }).length;
+    var targetPelanggan = allTargetPelanggan.filter(function (p) {
+      return !meteran.find(function (m) {
+        return m.pelangganId === p.id && m.periode === currentPeriode;
+      });
+    });
     useEffect(function () {
-      if (globalWilayahFilter !== 'all') setSelectedWilayah(globalWilayahFilter);
-    }, [globalWilayahFilter]);
+      if (globalWilayahFilter !== 'all' && wilayah.some(function (w) { return w.id === globalWilayahFilter; })) {
+        setSelectedWilayah(globalWilayahFilter);
+      }
+    }, [globalWilayahFilter, wilayah]);
     var handleSaveRow = function handleSaveRow(pelId, meterAwal) {
       var _pelanggan$find;
       var meterAkhir = parseInt(inputs[pelId]);
@@ -6273,7 +6286,6 @@ function TirtakalaApp() {
       value: selectedWilayah,
       onChange: function onChange(e) {
         setSelectedWilayah(e.target.value);
-        setGlobalWilayahFilter(e.target.value);
       }
     }, wilayah.map(function (w) {
       return /*#__PURE__*/React.createElement("option", {
@@ -6397,7 +6409,7 @@ function TirtakalaApp() {
     }, /*#__PURE__*/React.createElement(Icon, {
       path: ICONS.alertTriangle,
       className: "w-8 h-8 mx-auto mb-2 opacity-50"
-    }), "Tidak ada pelanggan aktif di wilayah ini.")))))));
+    }), allTargetPelanggan.length === 0 ? "Tidak ada pelanggan aktif di wilayah ini." : "Semua pelanggan pada wilayah ini sudah diinput untuk periode ini.")))))));
   };
   var TagihanView = function TagihanView() {
     var handleGenerateTagihan = function handleGenerateTagihan() {
@@ -10098,7 +10110,7 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
                       <select 
                         className="w-full md:w-64 border border-slate-300 rounded-lg p-2 bg-slate-50 focus:ring-2 focus:ring-teal-500 outline-none text-sm font-bold text-slate-800"
                         value={selectedWilayah}
-                        onChange={e => { setSelectedWilayah(e.target.value); setGlobalWilayahFilter(e.target.value); }}
+                        onChange={e => { setSelectedWilayah(e.target.value); }}
                       >
                         {wilayah.map(w => <option key={w.id} value={w.id}>{w.nama} ({w.kode})</option>)}
                       </select>
@@ -10113,7 +10125,7 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
                     <div className="w-px h-8 bg-slate-200"></div>
                     <div>
                       <p className="text-xs text-slate-500 uppercase font-bold">Progress Input</p>
-                      <p className="font-bold text-slate-800 text-lg">{inputtedCount} <span className="text-sm font-normal text-slate-500">/ {targetPelanggan.length}</span></p>
+                      <p className="font-bold text-slate-800 text-lg">{inputtedCount} <span className="text-sm font-normal text-slate-500">/ {allTargetPelanggan.length}</span></p>
                     </div>
                   </div>
                 </div>
@@ -10699,18 +10711,51 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
             const handleReceiptPrint = () => {
               if (trxToPrint.length === 0) return;
               const width = Math.max(40, Math.min(120, Number(thermalWidth) || 58));
+              const area = document.querySelector('.receipt-print-area');
+              if (!area) return;
+
               document.body.dataset.receiptPrintFormat = printFormat === 'a4' ? 'a4' : 'thermal';
               document.body.style.setProperty('--receipt-paper-width', `${width}mm`);
+
+              // Saat mencetak, buat lembar khusus yang hanya berisi kwitansi.
+              // Dengan cara ini menu, sidebar, preview, dan seluruh halaman aplikasi
+              // tidak ikut tercetak.
+              const printRoot = document.createElement('div');
+              printRoot.id = 'receipt-print-only-root';
+              printRoot.innerHTML = area.innerHTML;
+              document.body.appendChild(printRoot);
+
               const printStyle = document.createElement('style');
               printStyle.id = 'receipt-print-dynamic-style';
-              printStyle.textContent = `@media print { @page receipt-thermal { size: ${width}mm auto; margin: 0; } }`;
+              printStyle.textContent = `
+                @media print {
+                  @page receipt-a4 { size: A4 portrait; margin: 8mm; }
+                  @page receipt-thermal { size: ${width}mm auto; margin: 0; }
+                  body[data-receipt-print-format=\"a4\"] { page: receipt-a4; }
+                  body[data-receipt-print-format=\"thermal\"] { page: receipt-thermal; }
+                  body[data-receipt-print-format=\"a4\"] > #root { display: none !important; }
+                  body[data-receipt-print-format=\"a4\"] > #receipt-print-only-root { display: block !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
+                  body[data-receipt-print-format=\"thermal\"] > #root { display: none !important; }
+                  body[data-receipt-print-format=\"thermal\"] > #receipt-print-only-root { display: block !important; width: ${width}mm !important; max-width: ${width}mm !important; margin: 0 !important; padding: 0 !important; }
+                  body[data-receipt-print-format=\"a4\"] #receipt-print-only-root .receipt-print-grid { display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 6mm !important; width: 100% !important; }
+                  body[data-receipt-print-format=\"a4\"] #receipt-print-only-root .receipt-print-item { width: 100% !important; max-width: none !important; margin: 0 !important; break-inside: avoid !important; page-break-inside: avoid !important; }
+                  body[data-receipt-print-format=\"thermal\"] #receipt-print-only-root .receipt-print-grid { display: flex !important; flex-direction: column !important; gap: 0 !important; width: ${width}mm !important; }
+                  body[data-receipt-print-format=\"thermal\"] #receipt-print-only-root .receipt-print-item { width: ${width}mm !important; max-width: ${width}mm !important; margin: 0 !important; break-after: page !important; page-break-after: always !important; }
+                  body[data-receipt-print-format=\"thermal\"] #receipt-print-only-root .receipt-print-item:last-child { break-after: auto !important; page-break-after: auto !important; }
+                }
+              `;
               document.head.appendChild(printStyle);
-              window.print();
-              window.setTimeout(() => {
+
+              const cleanup = () => {
+                printRoot.remove();
+                printStyle.remove();
                 delete document.body.dataset.receiptPrintFormat;
                 document.body.style.removeProperty('--receipt-paper-width');
-                printStyle.remove();
-              }, 1000);
+                window.removeEventListener('afterprint', cleanup);
+              };
+              window.addEventListener('afterprint', cleanup);
+              window.print();
+              window.setTimeout(cleanup, 2000);
             };
 
             const ReceiptContent = ({ k }) => {
