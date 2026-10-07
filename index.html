@@ -10562,70 +10562,46 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
 
             const pelangganMenunggak = useMemo(() => {
               const targetPelanggan = pelanggan.filter(p => p.peran === 'Pelanggan' && (globalWilayahFilter === 'all' || p.wilayahId === globalWilayahFilter)).sort(compareCustomerIds);
-              const data = [];
-              
-              targetPelanggan.forEach(pel => {
-                 // Kasir hanya menampilkan pelanggan yang belum pernah membayar.
-                 // Pembayaran sebagian maupun lunas sama-sama disembunyikan.
-                 const belumDibayar = tagihan
-                   .filter(t =>
-                     t.pelangganId === pel.id &&
-                     t.status !== 'Lunas' &&
-                     Number(t.dibayar || 0) <= 0
-                   )
-                   .sort((a,b) => a.periode.localeCompare(b.periode));
-
-                 if (belumDibayar.length > 0) {
-                    const totalTunggakan = belumDibayar.reduce(
-                      (sum, item) => sum + Math.max(0, item.total - (item.dibayar || 0)),
-                      0
-                    );
-                    data.push({ pelanggan: pel, tagihanList: belumDibayar, totalTunggakan });
-                 }
-              });
-              return data;
+              return targetPelanggan.map(pel => {
+                const tagihanList = tagihan
+                  .filter(t => t.pelangganId === pel.id && Number(t.total || 0) > Number(t.dibayar || 0))
+                  .sort((a,b) => String(a.periode || '').localeCompare(String(b.periode || '')));
+                const totalTunggakan = tagihanList.reduce((sum, item) => sum + Math.max(0, Number(item.total || 0) - Number(item.dibayar || 0)), 0);
+                return { pelanggan: pel, tagihanList, totalTunggakan };
+              }).filter(data => data.tagihanList.length > 0);
             }, [tagihan, pelanggan, globalWilayahFilter]);
 
             const handleProcessPayment = (e) => {
               e.preventDefault();
               const t = paymentModal.tagihanTertua;
-              const nominal = parseInt(payAmount);
+              const nominal = parseInt(payAmount, 10);
               const pelData = paymentModal;
-              
-              const sisaTagihanCurrent = t.total - (t.dibayar || 0);
-              const alreadyPaid = Number(t.dibayar || 0) > 0 || t.status === 'Lunas';
-              const existingPayment = keuangan.some(row =>
-                row.tagihanId === t.id &&
-                row.tipe === 'Pemasukan' &&
-                row.kategori === 'Pembayaran Tagihan'
-              );
+              const sisaTagihanCurrent = Math.max(0, Number(t.total || 0) - Number(t.dibayar || 0));
 
-              if (alreadyPaid || existingPayment) {
-                showNotification("Tagihan ini sudah memiliki pembayaran dan tidak dapat diinput lagi dari kasir.", "error");
-                setPaymentModal(null);
-                setPayAmount('');
-                return;
+              if (sisaTagihanCurrent <= 0) {
+                showNotification('Tagihan ini sudah lunas.', 'error');
+                setPaymentModal(null); setPayAmount(''); return;
               }
+              if (!Number.isFinite(nominal) || nominal <= 0) { showNotification('Nominal tidak valid!', 'error'); return; }
+              if (nominal > sisaTagihanCurrent) { showNotification(`Nominal kelebihan! Sisa tagihan ini hanya ${formatRupiah(sisaTagihanCurrent)}`, 'error'); return; }
 
-              if (isNaN(nominal) || nominal <= 0) { showNotification("Nominal tidak valid!", "error"); return; }
-              if (nominal > sisaTagihanCurrent) { showNotification(`Nominal kelebihan! Sisa tagihan ini hanya ${formatRupiah(sisaTagihanCurrent)}`, "error"); return; }
-
-              const totalPaidNow = (t.dibayar || 0) + nominal;
-              const newStatus = totalPaidNow >= t.total ? 'Lunas' : 'Sebagian';
-
-              const updatedTagihan = tagihan.map(x => x.id === t.id ? { ...x, dibayar: totalPaidNow, status: newStatus } : x);
+              const totalPaidNow = Number(t.dibayar || 0) + nominal;
+              const newStatus = totalPaidNow >= Number(t.total || 0) ? 'Lunas' : 'Sebagian';
+              const updatedTagihan = tagihan.map(x => x.id === t.id ? { ...x, dibayar: totalPaidNow, saldo: Math.max(0, Number(x.total || 0) - totalPaidNow), status: newStatus } : x);
               setTagihan(updatedTagihan);
 
               const newKeuangan = {
                 id: `K${Date.now()}`, trx: `TRX-${Date.now().toString().slice(-6)}`, tanggal: new Date().toISOString().split('T')[0],
-                tipe: 'Pemasukan', kategori: 'Pembayaran Tagihan', nominal: nominal, ket: `Bayar Tagihan ${pelData.pelanggan.nama} (Prd: ${t.periode})`, tagihanId: t.id,
-                wilayahId: pelData.pelanggan.wilayahId || '', wilayahNama: wilayah.find(w => w.id === pelData.pelanggan.wilayahId)?.nama || ''
+                tipe: 'Pemasukan', kategori: 'Pembayaran Tagihan', nominal,
+                ket: `Bayar Tagihan ${pelData.pelanggan.nama} (Prd: ${t.periode})`, tagihanId: t.id,
+                wilayahId: pelData.pelanggan.wilayahId || '', wilayahNama: wilayah.find(w => w.id === pelData.pelanggan.wilayahId)?.nama || '',
+                petugasId: currentUser?.id || '', petugas: currentUser?.name || currentUser?.username || '',
+                sumberPembayaran: 'Super Admin'
               };
               setKeuangan([newKeuangan, ...keuangan]);
 
               showNotification(`Berhasil memproses pembayaran ${pelData.pelanggan.nama} sebesar ${formatRupiah(nominal)}`);
-              setPaymentModal(null);
-              setPayAmount('');
+              setPaymentModal(null); setPayAmount('');
             };
 
             return (
@@ -10642,18 +10618,17 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
                           <p className="text-xs text-slate-500 mb-1">Pelanggan</p>
                           <p className="font-bold text-slate-800">{paymentModal.pelanggan.nama}</p>
                           <p className="text-[10px] text-slate-400">{paymentModal.tagihanTertua.no} (Prd: {paymentModal.tagihanTertua.periode})</p>
+                          <p className="text-[10px] text-amber-600 font-bold mt-2">Status: {paymentModal.tagihanTertua.status || 'Belum Bayar'}</p>
                           <div className="mt-3 pt-3 border-t border-slate-200 flex justify-between items-center">
-                            <span className="text-xs font-bold text-slate-500 uppercase">Sisa Tagihan Ini:</span>
-                            <span className="font-bold text-rose-600 text-lg">{formatRupiah(paymentModal.tagihanTertua.total - (paymentModal.tagihanTertua.dibayar || 0))}</span>
+                            <span className="text-xs font-bold text-slate-500 uppercase">Sisa Tagihan:</span>
+                            <span className="font-bold text-rose-600 text-lg">{formatRupiah(Math.max(0, Number(paymentModal.tagihanTertua.total || 0) - Number(paymentModal.tagihanTertua.dibayar || 0)))}</span>
                           </div>
                         </div>
-                        
                         <div className="space-y-1">
                           <label className="text-xs font-bold text-slate-600 uppercase">Nominal Dibayar (Rp)</label>
-                          <input type="number" required placeholder="Contoh: 20000" className="w-full border border-slate-300 rounded-xl p-3 text-lg font-mono bg-white focus:ring-2 focus:ring-teal-500 outline-none" value={payAmount} onChange={e => setPayAmount(e.target.value)} />
-                          <p className="text-[10px] text-slate-400 mt-1">Anda bisa input nominal lebih kecil untuk pembayaran sebagian (dicicil).</p>
+                          <input type="number" required min="1" step="1" placeholder="Contoh: 20000" className="w-full border border-slate-300 rounded-xl p-3 text-lg font-mono bg-white focus:ring-2 focus:ring-teal-500 outline-none" value={payAmount} onChange={e => setPayAmount(e.target.value)} />
+                          <p className="text-[10px] text-slate-400 mt-1">Pembayaran sebagian diperbolehkan. Tagihan tetap muncul sampai lunas.</p>
                         </div>
-
                         <div className="pt-4 flex gap-3">
                           <button type="button" onClick={() => { setPaymentModal(null); setPayAmount(''); }} className="flex-1 py-3 text-sm font-bold text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200">Batal</button>
                           <button type="submit" className="flex-1 py-3 text-sm font-bold text-white bg-teal-600 rounded-xl hover:bg-teal-700 shadow-md">Simpan Uang</button>
@@ -10663,85 +10638,82 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
                   </div>
                 )}
 
-                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                   <div>
-                     <h2 className="text-2xl font-bold text-slate-800 font-serif">Kasir & Pembayaran</h2>
-                     <p className="text-slate-500 text-sm">Pembayaran dialokasikan otomatis ke tagihan periode terlama.</p>
-                   </div>
-                   <select className="bg-white border border-slate-300 rounded-xl px-4 py-2 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-teal-500" value={globalWilayahFilter} onChange={e => setGlobalWilayahFilter(e.target.value)}>
-                     <option value="all">Semua Wilayah</option>
-                     {wilayah.map(w => <option key={w.id} value={w.id}>{w.nama}</option>)}
-                   </select>
-                 </div>
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                  <div>
+                    <h2 className="text-2xl font-bold text-slate-800 font-serif">Kasir & Pembayaran</h2>
+                    <p className="text-slate-500 text-sm">Menampilkan tagihan yang masih memiliki sisa pembayaran, termasuk yang sudah dibayar sebagian.</p>
+                  </div>
+                  <select className="bg-white border border-slate-300 rounded-xl px-4 py-2 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-teal-500" value={globalWilayahFilter} onChange={e => setGlobalWilayahFilter(e.target.value)}>
+                    <option value="all">Semua Wilayah</option>
+                    {wilayah.map(w => <option key={w.id} value={w.id}>{w.nama}</option>)}
+                  </select>
+                </div>
 
-                 <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mt-6">
-                   {pelangganMenunggak.map(data => {
-                     if (data.tagihanList.length === 0) {
-                        return (
-                          <div key={data.pelanggan.id} className="bg-emerald-50/50 p-6 rounded-2xl border border-emerald-100 shadow-sm flex flex-col justify-center items-center text-center opacity-80">
-                            <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-2"><Icon path={ICONS.shield} className="w-6 h-6"/></div>
-                            <h3 className="font-bold text-slate-800 text-sm truncate max-w-[150px]">{data.pelanggan.nama}</h3>
-                            <p className="text-xs text-emerald-600 font-bold mt-1">Tidak Ada Tunggakan</p>
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mt-6">
+                  {pelangganMenunggak.map(data => {
+                    const tagihanTertua = data.tagihanList[0];
+                    const sisaTagTertua = Math.max(0, Number(tagihanTertua.total || 0) - Number(tagihanTertua.dibayar || 0));
+                    return (
+                      <div key={data.pelanggan.id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:border-teal-300 transition-colors">
+                        <div className="flex justify-between items-start mb-4">
+                          <div>
+                            <h3 className="font-bold text-lg text-slate-800 truncate max-w-[180px]">{data.pelanggan.nama}</h3>
+                            <p className="text-xs text-slate-500 font-mono bg-slate-100 px-2 py-1 rounded inline-block mt-1">{data.pelanggan.no}</p>
+                            <p className="text-[10px] text-slate-400 mt-1">{wilayah.find(w => w.id === data.pelanggan.wilayahId)?.nama || 'Tanpa Wilayah'}</p>
                           </div>
-                        )
-                     }
-
-                     const tagihanTertua = data.tagihanList[0];
-                     const sisaTagTertua = tagihanTertua.total - (tagihanTertua.dibayar || 0);
-                     return (
-                       <div key={data.pelanggan.id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:border-teal-300 transition-colors">
-                         <div className="flex justify-between items-start mb-4">
-                           <div>
-                             <h3 className="font-bold text-lg text-slate-800 truncate max-w-[150px]">{data.pelanggan.nama}</h3>
-                             <p className="text-xs text-slate-500 font-mono bg-slate-100 px-2 py-1 rounded inline-block mt-1">{data.pelanggan.no}</p>
-                           </div>
-                           <div className="text-right">
-                             <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-1">Total Tunggakan</p>
-                             <p className="font-bold text-rose-600 font-mono text-lg leading-none">{formatRupiah(data.totalTunggakan)}</p>
-                           </div>
-                         </div>
-
-                         <div className="bg-[#fdfbf7] rounded-xl p-4 border border-amber-900/10 mb-4">
-                           <p className="text-[10px] font-bold text-slate-500 uppercase mb-2">Tagihan Tertua (Akan Dibayar):</p>
-                           <div className="flex justify-between items-center mb-1">
-                             <span className="text-xs text-slate-600">Periode:</span>
-                             <span className="font-bold text-slate-800 font-mono text-xs">{tagihanTertua.periode}</span>
-                           </div>
-                           <div className="flex justify-between items-center">
-                             <span className="text-xs text-slate-600">Kekurangan:</span>
-                             <span className="font-bold text-slate-800 font-mono text-sm">{formatRupiah(sisaTagTertua)}</span>
-                           </div>
-                         </div>
-
-                         <button onClick={() => { setPaymentModal({ ...data, tagihanTertua }); setPayAmount(sisaTagTertua.toString()); }} className="w-full bg-teal-600 text-white px-4 py-3 rounded-xl font-bold hover:bg-teal-700 transition-colors shadow-sm flex items-center justify-center gap-2">
-                           <Icon path={ICONS.dollar} className="w-4 h-4"/> Input Pembayaran
-                         </button>
-                       </div>
-                     )
-                   })}
-                   {pelangganMenunggak.length === 0 && (
-                     <div className="col-span-full bg-white p-12 rounded-2xl border border-slate-200 text-center text-slate-400 font-bold">Data pelanggan di wilayah ini kosong.</div>
-                   )}
-                 </div>
+                          <div className="text-right">
+                            <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-1">Total Sisa</p>
+                            <p className="font-bold text-rose-600 font-mono text-lg leading-none">{formatRupiah(data.totalTunggakan)}</p>
+                          </div>
+                        </div>
+                        <div className="bg-[#fdfbf7] rounded-xl p-4 border border-amber-900/10 mb-4">
+                          <p className="text-[10px] font-bold text-slate-500 uppercase mb-2">Tagihan Tertua:</p>
+                          <div className="flex justify-between text-xs mb-1"><span>Periode</span><strong>{tagihanTertua.periode || tagihanTertua.no}</strong></div>
+                          <div className="flex justify-between text-xs mb-1"><span>Total Tagihan</span><strong>{formatRupiah(tagihanTertua.total)}</strong></div>
+                          <div className="flex justify-between text-xs mb-1"><span>Sudah Dibayar</span><strong className="text-emerald-600">{formatRupiah(tagihanTertua.dibayar || 0)}</strong></div>
+                          <div className="flex justify-between text-sm mt-2 pt-2 border-t border-amber-900/10"><span className="font-bold">Sisa</span><strong className="text-rose-600">{formatRupiah(sisaTagTertua)}</strong></div>
+                          <p className="text-[10px] font-bold mt-2 text-amber-700">Status: {tagihanTertua.status || 'Belum Bayar'}</p>
+                        </div>
+                        <button onClick={() => { setPaymentModal({ ...data, tagihanTertua }); setPayAmount(sisaTagTertua.toString()); }} className="w-full bg-teal-600 text-white px-4 py-3 rounded-xl font-bold hover:bg-teal-700 transition-colors shadow-sm flex items-center justify-center gap-2">
+                          Bayar / Lanjutkan Pembayaran
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+                {pelangganMenunggak.length === 0 && <div className="bg-white p-10 rounded-2xl border border-slate-200 text-center text-slate-500">Tidak ada tagihan dengan sisa pembayaran pada wilayah yang dipilih.</div>}
               </div>
-            )
-          }
+            );
+          };
 
           const KwitansiView = () => {
             const [printFormat, setPrintFormat] = useState('a4');
             const [kopEdit, setKopEdit] = useState({ nama: profilPAM.namaPAM, baris1: profilPAM.alamat, baris2: 'Kab. ' + profilPAM.kabupaten });
             const [isEditingKop, setIsEditingKop] = useState(false);
+            const [receiptRegion, setReceiptRegion] = useState('all');
+            const [receiptSearch, setReceiptSearch] = useState('');
+            const [selectedTrxIds, setSelectedTrxIds] = useState([]);
 
-            const recentTrx = keuangan.filter(k => k.tipe === 'Pemasukan' && k.kategori === 'Pembayaran Tagihan').slice(0, 20);
-            const [selectedTrxIds, setSelectedTrxIds] = useState(recentTrx.map(k=>k.id));
-            
-            const handleCheckboxTrx = (id) => {
-              if (selectedTrxIds.includes(id)) { setSelectedTrxIds(selectedTrxIds.filter(tId => tId !== id)); } 
-              else { setSelectedTrxIds([...selectedTrxIds, id]); }
-            };
+            const allPaymentTrx = useMemo(() => keuangan
+              .filter(k => k.tipe === 'Pemasukan' && k.kategori === 'Pembayaran Tagihan')
+              .map(k => {
+                const bill = tagihan.find(x => x.id === k.tagihanId);
+                const customer = pelanggan.find(p => p.id === bill?.pelangganId || p.idPelanggan === bill?.pelangganId);
+                const wilayahId = k.wilayahId || customer?.wilayahId || '';
+                const wilayahNama = k.wilayahNama || wilayah.find(w => w.id === wilayahId)?.nama || 'Tanpa Wilayah';
+                return { ...k, _bill: bill, _customer: customer, _wilayahId: wilayahId, _wilayahNama: wilayahNama };
+              })
+              .filter(k => receiptRegion === 'all' || k._wilayahId === receiptRegion)
+              .filter(k => {
+                const q = receiptSearch.trim().toLocaleLowerCase('id-ID');
+                return !q || `${k._customer?.nama || ''} ${k._customer?.no || ''} ${k._wilayahNama} ${k.trx || ''}`.toLocaleLowerCase('id-ID').includes(q);
+              })
+              .sort((a,b) => String(b.tanggal || '').localeCompare(String(a.tanggal || '')) || String(b.id || '').localeCompare(String(a.id || ''))),
+              [keuangan, tagihan, pelanggan, wilayah, receiptRegion, receiptSearch]);
 
-            const trxToPrint = recentTrx.filter(k => selectedTrxIds.includes(k.id));
-
+            useEffect(() => { setSelectedTrxIds(allPaymentTrx.map(k => k.id)); }, [allPaymentTrx]);
+            const handleCheckboxTrx = id => setSelectedTrxIds(current => current.includes(id) ? current.filter(tId => tId !== id) : [...current, id]);
+            const trxToPrint = allPaymentTrx.filter(k => selectedTrxIds.includes(k.id));
             const printClasses = {
               thermal58: "w-[58mm] text-[10px] leading-tight mx-auto print:mx-0 print:break-after-page",
               thermal80: "w-[80mm] text-[12px] leading-snug mx-auto print:mx-0 print:break-after-page",
@@ -10749,120 +10721,67 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
             };
 
             const ReceiptContent = ({ k }) => {
-               const t = tagihan.find(x => x.id === k.tagihanId);
-               const pel = pelanggan.find(p => p.id === t?.pelangganId);
-               
-               return (
-                 <div className={`bg-white p-4 border border-slate-200 shadow-sm print:border-slate-800 print:shadow-none font-mono text-slate-900 ${printClasses[printFormat]}`}>
-                    <div className="text-center border-b-2 border-dashed border-slate-800 pb-3 mb-3">
-                      <h1 className="font-bold text-lg uppercase tracking-widest">{kopEdit.nama}</h1>
-                      <p className="opacity-80 text-[10px] leading-tight mt-1">{kopEdit.baris1}</p>
-                      <p className="opacity-80 text-[10px] leading-tight">{kopEdit.baris2}</p>
-                    </div>
-                    
-                    <h3 className="text-center font-bold mb-3 uppercase text-xs">Bukti Pembayaran Resmi</h3>
-                    
-                    <div className="space-y-1 mb-3 text-xs">
-                      <div className="flex justify-between"><span className="opacity-70">No Trx</span> <span>{k.trx}</span></div>
-                      <div className="flex justify-between"><span className="opacity-70">Tanggal</span> <span>{k.tanggal}</span></div>
-                      <div className="flex justify-between"><span className="opacity-70">Petugas</span> <span>{currentUser.username}</span></div>
-                    </div>
-
-                    <div className="border-t border-b border-dashed border-slate-400 py-3 mb-3 space-y-1 text-xs">
-                       <div className="flex justify-between"><span className="opacity-70">No Pelanggan</span> <span className="font-bold">{pel?.no}</span></div>
-                       <div className="flex justify-between"><span className="opacity-70">Nama</span> <span className="font-bold uppercase truncate max-w-[120px]">{pel?.nama}</span></div>
-                       <div className="flex justify-between mt-2"><span className="opacity-70">Periode</span> <span>{t?.periode}</span></div>
-                       <div className="flex justify-between"><span className="opacity-70">Pemakaian Air</span> <span>{t?.pemakaian} m³</span></div>
-                    </div>
-
-                    <div className="space-y-1 mb-6 text-sm">
-                       <div className="flex justify-between font-bold mt-2 pt-2 border-t-2 border-slate-900">
-                         <span>TOTAL BAYAR</span> <span>{formatRupiah(k.nominal)}</span>
-                       </div>
-                    </div>
-                    
-                    <div className="text-center text-[9px] opacity-70 italic border-t border-dashed border-slate-400 pt-3">
-                      <p>Terima kasih atas pembayaran Anda.</p>
-                      <p className="mt-1">"Mengalirkan Air, Menjaga Desa"</p>
-                    </div>
-                 </div>
-               );
+              const t = k._bill || tagihan.find(x => x.id === k.tagihanId);
+              const pel = k._customer || pelanggan.find(p => p.id === t?.pelangganId || p.idPelanggan === t?.pelangganId);
+              const petugas = k.petugas || k.sumberPembayaran || '—';
+              return (
+                <div className={`bg-white p-4 border border-slate-200 shadow-sm print:border-slate-800 print:shadow-none font-mono text-slate-900 ${printClasses[printFormat]}`}>
+                  <div className="text-center border-b-2 border-dashed border-slate-800 pb-3 mb-3">
+                    <h1 className="font-bold text-lg uppercase tracking-widest">{kopEdit.nama}</h1>
+                    <p className="opacity-80 text-[10px] leading-tight mt-1">{kopEdit.baris1}</p>
+                    <p className="opacity-80 text-[10px] leading-tight">{kopEdit.baris2}</p>
+                  </div>
+                  <h3 className="text-center font-bold mb-3 uppercase text-xs">Bukti Pembayaran Resmi</h3>
+                  <div className="space-y-1 mb-3 text-xs">
+                    <div className="flex justify-between"><span className="opacity-70">No Trx</span><span>{k.trx || k.id}</span></div>
+                    <div className="flex justify-between"><span className="opacity-70">Tanggal</span><span>{k.tanggal}</span></div>
+                    <div className="flex justify-between"><span className="opacity-70">Petugas</span><span>{petugas}</span></div>
+                    <div className="flex justify-between"><span className="opacity-70">Wilayah</span><span>{k._wilayahNama}</span></div>
+                  </div>
+                  <div className="border-t border-b border-dashed border-slate-400 py-3 mb-3 space-y-1 text-xs">
+                    <div className="flex justify-between"><span className="opacity-70">No Pelanggan</span><span className="font-bold">{pel?.noPelanggan || pel?.no || '—'}</span></div>
+                    <div className="flex justify-between"><span className="opacity-70">Nama</span><span className="font-bold uppercase truncate max-w-[120px]">{pel?.nama || k.ket || '—'}</span></div>
+                    <div className="flex justify-between mt-2"><span className="opacity-70">Periode</span><span>{t?.periode || '—'}</span></div>
+                    <div className="flex justify-between"><span className="opacity-70">Pemakaian Air</span><span>{t?.pemakaian ?? '—'} {t?.pemakaian != null ? 'm³' : ''}</span></div>
+                  </div>
+                  <div className="space-y-1 mb-6 text-sm"><div className="flex justify-between font-bold mt-2 pt-2 border-t-2 border-slate-900"><span>TOTAL BAYAR</span><span>{formatRupiah(k.nominal)}</span></div></div>
+                  <div className="text-center text-[9px] opacity-70 italic border-t border-dashed border-slate-400 pt-3"><p>Terima kasih atas pembayaran Anda.</p><p className="mt-1">"Mengalirkan Air, Menjaga Desa"</p></div>
+                </div>
+              );
             };
 
             return (
               <div className="space-y-6 animate-fade-in relative">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 print:hidden">
-                  <div>
-                    <h2 className="text-2xl font-bold text-slate-800 font-serif">Cetak Kwitansi</h2>
-                    <p className="text-slate-500 text-sm">Edit kop surat, pilih format printer, dan cetak multi-dokumen.</p>
-                  </div>
-                  <div className="flex gap-2 items-center bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
-                    <select className="bg-transparent text-sm font-bold outline-none border-none pr-4 text-slate-700 cursor-pointer" value={printFormat} onChange={e => setPrintFormat(e.target.value)}>
-                      <option value="thermal58">Thermal 58mm (Roll)</option>
-                      <option value="thermal80">Thermal 80mm (Roll)</option>
-                      <option value="a4">Kertas A4 (Grid)</option>
-                    </select>
-                    <div className="w-px h-6 bg-slate-200 mx-2"></div>
-                    <button onClick={() => window.print()} disabled={trxToPrint.length===0} className="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-slate-900 disabled:opacity-50">
-                      <Icon path={ICONS.printer} /> Print {trxToPrint.length} Dokumen
-                    </button>
+                  <div><h2 className="text-2xl font-bold text-slate-800 font-serif">Cetak Kwitansi</h2><p className="text-slate-500 text-sm">Tampilkan dan cetak seluruh pembayaran dari Super Admin maupun Admin Wilayah.</p></div>
+                  <div className="flex flex-wrap gap-2 items-center bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
+                    <select className="bg-transparent text-sm font-bold outline-none border-none pr-4 text-slate-700 cursor-pointer" value={receiptRegion} onChange={e => setReceiptRegion(e.target.value)}><option value="all">Semua Wilayah</option>{wilayah.map(w => <option key={w.id} value={w.id}>{w.nama}</option>)}</select>
+                    <input value={receiptSearch} onChange={e => setReceiptSearch(e.target.value)} placeholder="Cari pelanggan / transaksi" className="border rounded-lg px-3 py-2 text-xs w-48 outline-none focus:ring-2 focus:ring-teal-500" />
+                    <select className="bg-transparent text-sm font-bold outline-none border-none pr-4 text-slate-700 cursor-pointer" value={printFormat} onChange={e => setPrintFormat(e.target.value)}><option value="thermal58">Thermal 58mm (Roll)</option><option value="thermal80">Thermal 80mm (Roll)</option><option value="a4">Kertas A4 (Grid)</option></select>
+                    <button onClick={() => window.print()} disabled={trxToPrint.length === 0} className="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-slate-900 disabled:opacity-50"><Icon path={ICONS.printer} /> Print {trxToPrint.length} Dokumen</button>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 print:block print:w-full print:m-0">
-                   <div className="lg:col-span-1 space-y-4 print:hidden">
-                     <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                        <div className="flex justify-between items-center mb-3">
-                          <h3 className="font-bold text-sm text-slate-800">Kop Kwitansi</h3>
-                          <button onClick={() => setIsEditingKop(!isEditingKop)} className="text-teal-600 text-xs font-bold bg-teal-50 px-2 py-1 rounded">
-                            {isEditingKop ? 'Tutup' : 'Edit Kop'}
-                          </button>
-                        </div>
-                        {isEditingKop ? (
-                          <div className="space-y-2">
-                            <input type="text" className="w-full border border-slate-300 rounded p-2 text-xs font-bold" value={kopEdit.nama} onChange={e => setKopEdit({...kopEdit, nama: e.target.value})} placeholder="Nama Utama"/>
-                            <input type="text" className="w-full border border-slate-300 rounded p-2 text-xs" value={kopEdit.baris1} onChange={e => setKopEdit({...kopEdit, baris1: e.target.value})} placeholder="Baris 1 (Alamat)"/>
-                            <input type="text" className="w-full border border-slate-300 rounded p-2 text-xs" value={kopEdit.baris2} onChange={e => setKopEdit({...kopEdit, baris2: e.target.value})} placeholder="Baris 2 (Kota/No)"/>
-                          </div>
-                        ) : (
-                          <div className="bg-slate-50 p-3 rounded border border-slate-100 text-center font-mono">
-                            <p className="font-bold text-sm uppercase">{kopEdit.nama}</p>
-                            <p className="text-[10px] text-slate-500 mt-1">{kopEdit.baris1}</p>
-                            <p className="text-[10px] text-slate-500">{kopEdit.baris2}</p>
-                          </div>
-                        )}
-                     </div>
-
-                     <div className="bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col h-[60vh]">
-                       <div className="p-3 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-                         <h3 className="font-bold text-sm text-slate-800">Pilih Transaksi</h3>
-                         <span className="text-[10px] font-bold text-slate-400">20 Terakhir</span>
-                       </div>
-                       <div className="overflow-y-auto p-2 space-y-1 flex-1 custom-scrollbar">
-                         {recentTrx.map(k => {
-                           const t = tagihan.find(x => x.id === k.tagihanId);
-                           const pel = pelanggan.find(p => p.id === t?.pelangganId);
-                           return (
-                             <label key={k.id} className={`flex items-center gap-3 p-2 rounded cursor-pointer border ${selectedTrxIds.includes(k.id) ? 'bg-teal-50 border-teal-200' : 'hover:bg-slate-50 border-transparent'}`}>
-                               <input type="checkbox" className="w-4 h-4 text-teal-600 rounded" checked={selectedTrxIds.includes(k.id)} onChange={() => handleCheckboxTrx(k.id)} />
-                               <div className="flex-1 overflow-hidden">
-                                 <p className="text-xs font-bold text-slate-800 truncate">{pel?.nama}</p>
-                                 <p className="text-[10px] text-slate-500">{k.tanggal} - {formatRupiah(k.nominal)}</p>
-                               </div>
-                             </label>
-                           )
-                         })}
-                         {recentTrx.length === 0 && <p className="text-xs text-center text-slate-400 p-4">Belum ada transaksi.</p>}
-                       </div>
-                     </div>
-                   </div>
-
-                   <div className={`lg:col-span-3 bg-slate-100/50 rounded-xl p-4 md:p-8 flex items-start print:p-0 print:bg-white overflow-y-auto max-h-[80vh] print:max-h-none print:overflow-visible custom-scrollbar ${printFormat==='a4' ? 'justify-start' : 'justify-center'}`}>
-                      <div className={`w-full ${printFormat === 'a4' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 print:grid-cols-3 gap-6 print:gap-4' : 'flex flex-col space-y-8 print:space-y-0'}`}>
-                        {trxToPrint.map(k => <ReceiptContent key={k.id} k={k} /> )}
-                        {trxToPrint.length === 0 && <div className="col-span-full text-center py-20 text-slate-400 print:hidden font-bold">Pilih minimal 1 transaksi untuk diprint.</div>}
+                  <div className="lg:col-span-1 space-y-4 print:hidden">
+                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                      <div className="flex justify-between items-center mb-3"><h3 className="font-bold text-sm text-slate-800">Kop Kwitansi</h3><button onClick={() => setIsEditingKop(!isEditingKop)} className="text-teal-600 text-xs font-bold bg-teal-50 px-2 py-1 rounded">{isEditingKop ? 'Tutup' : 'Edit Kop'}</button></div>
+                      {isEditingKop ? <div className="space-y-2"><input type="text" className="w-full border border-slate-300 rounded p-2 text-xs font-bold" value={kopEdit.nama} onChange={e => setKopEdit({...kopEdit, nama: e.target.value})} placeholder="Nama Utama"/><input type="text" className="w-full border border-slate-300 rounded p-2 text-xs" value={kopEdit.baris1} onChange={e => setKopEdit({...kopEdit, baris1: e.target.value})} placeholder="Baris 1 (Alamat)"/><input type="text" className="w-full border border-slate-300 rounded p-2 text-xs" value={kopEdit.baris2} onChange={e => setKopEdit({...kopEdit, baris2: e.target.value})} placeholder="Baris 2 (Kota/No)"/></div> : <div className="bg-slate-50 p-3 rounded border border-slate-100 text-center font-mono"><p className="font-bold text-sm uppercase">{kopEdit.nama}</p><p className="text-[10px] text-slate-500 mt-1">{kopEdit.baris1}</p><p className="text-[10px] text-slate-500">{kopEdit.baris2}</p></div>}
+                    </div>
+                    <div className="bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col h-[60vh]">
+                      <div className="p-3 border-b border-slate-100 bg-slate-50 flex justify-between items-center"><h3 className="font-bold text-sm text-slate-800">Pilih Transaksi</h3><span className="text-[10px] font-bold text-slate-400">{allPaymentTrx.length} transaksi</span></div>
+                      <div className="overflow-y-auto p-2 space-y-1 flex-1 custom-scrollbar">
+                        {allPaymentTrx.map(k => <label key={k.id} className={`flex items-center gap-3 p-2 rounded cursor-pointer border ${selectedTrxIds.includes(k.id) ? 'bg-teal-50 border-teal-200' : 'hover:bg-slate-50 border-transparent'}`}><input type="checkbox" className="w-4 h-4 text-teal-600 rounded" checked={selectedTrxIds.includes(k.id)} onChange={() => handleCheckboxTrx(k.id)} /><div className="flex-1 overflow-hidden"><p className="text-xs font-bold text-slate-800 truncate">{k._customer?.nama || 'Pelanggan'}</p><p className="text-[10px] text-slate-500">{k.tanggal} · {k._wilayahNama} · {formatRupiah(k.nominal)}</p><p className="text-[9px] text-slate-400">{k.petugas || k.sumberPembayaran || 'Petugas lama'}</p></div></label>)}
+                        {allPaymentTrx.length === 0 && <p className="text-xs text-center text-slate-400 p-4">Belum ada transaksi pembayaran.</p>}
                       </div>
-                   </div>
+                    </div>
+                  </div>
+                  <div className={`lg:col-span-3 bg-slate-100/50 rounded-xl p-4 md:p-8 flex items-start print:p-0 print:bg-white overflow-y-auto max-h-[80vh] print:max-h-none print:overflow-visible custom-scrollbar ${printFormat==='a4' ? 'justify-start' : 'justify-center'}`}>
+                    <div className={`w-full ${printFormat === 'a4' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 print:grid-cols-3 gap-6 print:gap-4' : 'flex flex-col space-y-8 print:space-y-0'}`}>
+                      {trxToPrint.map(k => <ReceiptContent key={k.id} k={k} />)}
+                      {trxToPrint.length === 0 && <div className="col-span-full text-center py-20 text-slate-400 print:hidden font-bold">Tidak ada pembayaran untuk filter yang dipilih.</div>}
+                    </div>
+                  </div>
                 </div>
               </div>
             );
@@ -11494,7 +11413,7 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
                 .filter(bill =>
                   bill.pelangganId === (customer.idPelanggan || customer.id) &&
                   bill.status !== 'Lunas' &&
-                  Number(bill.dibayar || 0) <= 0
+                  Number(bill.total || 0) > Number(bill.dibayar || 0)
                 )
                 .map(bill => ({ ...bill, customer }))
             );
@@ -11600,21 +11519,17 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
               if (!target || !Number.isFinite(amount) || amount <= 0 || amount > remaining) { showNotification('Total Bayar harus positif dan tidak boleh melebihi sisa tagihan.', 'error'); return; }
               if (!paymentDate || Number.isNaN(parsedDate.getTime()) || parsedDate.toISOString().slice(0, 10) !== paymentDate) { showNotification('Tanggal pembayaran tidak valid.', 'error'); return; }
 
-              const alreadyPaid = Number(target.dibayar || 0) > 0 || target.status === 'Lunas';
-              const existingPayment = keuangan.some(row =>
-                row.tagihanId === target.id &&
-                row.tipe === 'Pemasukan' &&
-                row.kategori === 'Pembayaran Tagihan'
-              );
-              if (alreadyPaid || existingPayment) {
-                showNotification('Tagihan ini sudah memiliki pembayaran. Pelanggan disembunyikan dari daftar agar tidak terjadi pembayaran ganda.', 'error');
+              if (remaining <= 0 || target.status === 'Lunas') {
+                showNotification('Tagihan ini sudah lunas.', 'error');
                 setSelectedBill(null);
                 return;
               }
               const paid = Number(target.dibayar || 0) + amount;
               setTagihan(rows => rows.map(row => row.id === target.id ? { ...row, dibayar: paid, status: paid >= Number(row.total) ? 'Lunas' : 'Sebagian' } : row));
               const transaction = { id: `K${Date.now()}`, trx: `TRX-${Date.now().toString().slice(-6)}`, tanggal: paymentDate, tipe: 'Pemasukan', kategori: 'Pembayaran Tagihan', nominal: amount, ket: `Bayar Tagihan ${selectedBill.customer.nama} (Prd: ${target.periode})`, tagihanId: target.id,
-                wilayahId: selectedBill.customer.wilayahId || '', wilayahNama: wilayah.find(w => w.id === selectedBill.customer.wilayahId)?.nama || '' };
+                wilayahId: selectedBill.customer.wilayahId || '', wilayahNama: wilayah.find(w => w.id === selectedBill.customer.wilayahId)?.nama || '',
+                petugasId: currentUser?.id || '', petugas: currentUser?.name || currentUser?.username || '',
+                sumberPembayaran: 'Admin Wilayah' };
               setKeuangan(rows => [transaction, ...rows]);
               showNotification('Pembayaran berhasil dicatat pada penyimpanan aplikasi. Sinkronisasi server belum dikonfigurasi.');
               setSelectedBill(null); setPaymentAmount(''); setActiveMenu('wilayah-bayar');
