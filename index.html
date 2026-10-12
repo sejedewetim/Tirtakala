@@ -736,11 +736,15 @@ function TirtakalaApp() {
 
   // Helper for Reports / Arrears
   var getTunggakanBulanSebelumnya = function getTunggakanBulanSebelumnya(pelId, periodeAktif) {
-    return tagihan.filter(function (t) {
-      return t.pelangganId === pelId && t.periode < periodeAktif && t.status !== 'Lunas';
+    var customerKey = String(pelId == null ? '' : pelId);
+    return (Array.isArray(tagihan) ? tagihan : []).filter(function (t) {
+      return String(t.pelangganId == null ? t.idPelanggan || '' : t.pelangganId) === customerKey
+        && String(t.periode || '') < String(periodeAktif || '');
     }).reduce(function (sum, t) {
-      return sum + (t.total - (t.dibayar || 0));
-    }, 0); // Include partial payments deduction
+      var total = Math.max(0, Number(t.total) || 0);
+      var dibayar = Math.max(0, Number(t.dibayar) || 0);
+      return sum + Math.max(0, total - dibayar);
+    }, 0);
   };
   var getTagihanBulanIni = function getTagihanBulanIni(pelId, periodeAktif) {
     return tagihan.find(function (t) {
@@ -4688,11 +4692,15 @@ function TirtakalaApp() {
 
   // Helper for Reports / Arrears
   var getTunggakanBulanSebelumnya = function getTunggakanBulanSebelumnya(pelId, periodeAktif) {
-    return tagihan.filter(function (t) {
-      return t.pelangganId === pelId && t.periode < periodeAktif && t.status !== 'Lunas';
+    var customerKey = String(pelId == null ? '' : pelId);
+    return (Array.isArray(tagihan) ? tagihan : []).filter(function (t) {
+      return String(t.pelangganId == null ? t.idPelanggan || '' : t.pelangganId) === customerKey
+        && String(t.periode || '') < String(periodeAktif || '');
     }).reduce(function (sum, t) {
-      return sum + (t.total - (t.dibayar || 0));
-    }, 0); // Include partial payments deduction
+      var total = Math.max(0, Number(t.total) || 0);
+      var dibayar = Math.max(0, Number(t.dibayar) || 0);
+      return sum + Math.max(0, total - dibayar);
+    }, 0);
   };
   var getTagihanBulanIni = function getTagihanBulanIni(pelId, periodeAktif) {
     return tagihan.find(function (t) {
@@ -5117,7 +5125,59 @@ function TirtakalaApp() {
       var bodyRows = pelanggan.map(function (customer) {
         return "<tr>" + ["id", "no", "nama", "wilayahId", "alamat", "peran", "aktif"].map(function (field) { return "<td>" + escapeHtml(customer[field]) + "</td>"; }).join("") + "</tr>";
       }).join("");
-      printWindow.document.write("<!doctype html><html lang=\\\"id\\\"><head><meta charset=\\\"utf-8\\\"><title>Data Pelanggan</title><style>@page{size:A4 landscape;margin:12mm}body{font:12px Arial,sans-serif;color:#172033}h1{font-size:22px;margin:0 0 6px}p{margin:0 0 16px;color:#475569}table{width:100%;border-collapse:collapse;table-layout:auto}thead{display:table-header-group}tr{break-inside:avoid}th,td{border:1px solid #cbd5e1;padding:7px;text-align:left;overflow-wrap:anywhere}th{background:#e2e8f0}td{white-space:normal}</style></head><body><h1>Data Pelanggan</h1><p>Tanggal cetak: " + escapeHtml(new Date().toLocaleDateString("id-ID")) + " · " + pelanggan.length + " pelanggan</p><table><thead><tr><th>ID</th><th>No Pelanggan</th><th>Nama</th><th>Wilayah</th><th>Alamat</th><th>Peran</th><th>Status Aktif</th></tr></thead><tbody>" + bodyRows + "</tbody></table><script>window.onload=function(){window.print();};<\\/script></body></html>");
+      printWindow.document.write("<!doctype html><html lang=\\\"id\\\"><head><meta charset=\\\"utf-8\\\"><title>Data Pelanggan</title><style>@page{size:A4 landscape;margin:12mm}body{font:12px Arial,sans-serif;color:#172033}h1{font-size:22px;margin:0 0 6px}p{margin:0 0 16px;color:#475569}table{width:100%;border-collapse:collapse;table-layout:auto}thead{display:table-header-group}tr{break-inside:avoid}th,td{border:1px solid #cbd5e1;padding:7px;text-align:left;overflow-wrap:anywhere}th{background:#e2e8f0}td{white-space:normal}</style>
+  <style id="tirtakala-responsive-improvements">
+    :root { color-scheme: light; }
+    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+    body { min-width: 320px; overscroll-behavior-y: contain; }
+    button, input, select, textarea { touch-action: manipulation; }
+    button, [role="button"], input, select, textarea { min-height: 40px; }
+    input, select, textarea { max-width: 100%; }
+    #root { min-height: 100vh; min-height: 100dvh; }
+    @supports (padding: max(0px)) {
+      body { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+    }
+    @media (max-width: 767px) {
+      #root .h-screen { height: 100dvh !important; min-height: 100dvh !important; }
+      #root .flex.h-screen { overflow: hidden !important; }
+      #root main { min-width: 0 !important; width: 100%; }
+      #root main > header { gap: .5rem; padding-left: .75rem !important; padding-right: .75rem !important; }
+      #root main > header h1, #root main > header h2 { max-width: 58vw; overflow-wrap: anywhere; }
+      #root main > .flex-1.overflow-y-auto { padding: .75rem !important; padding-bottom: calc(.75rem + env(safe-area-inset-bottom)) !important; }
+      #root .grid { grid-template-columns: minmax(0, 1fr) !important; }
+      #root .grid[class*="sm:grid-cols-2"],
+      #root .grid[class*="md:grid-cols-2"],
+      #root .grid[class*="lg:grid-cols-2"],
+      #root .grid[class*="xl:grid-cols-3"] { grid-template-columns: minmax(0, 1fr) !important; }
+      #root .overflow-x-auto { max-width: 100%; -webkit-overflow-scrolling: touch; }
+      #root table { min-width: 620px; }
+      #root .rounded-2xl, #root .rounded-3xl { border-radius: .9rem; }
+      #root .p-8 { padding: 1rem !important; }
+      #root .p-6 { padding: 1rem !important; }
+      #root .px-6 { padding-left: .875rem !important; padding-right: .875rem !important; }
+      #root .text-3xl { font-size: 1.55rem; line-height: 1.9rem; }
+      #root .text-2xl { font-size: 1.3rem; line-height: 1.7rem; }
+      #root .fixed.top-6.right-6 { top: max(.75rem, env(safe-area-inset-top)) !important; left: .75rem !important; right: .75rem !important; width: auto !important; }
+      #root input, #root select, #root textarea { font-size: 16px !important; }
+      #root .flex.flex-wrap { row-gap: .5rem; }
+      #root .w-72 { width: min(18rem, 86vw) !important; }
+    }
+    @media (min-width: 768px) and (max-width: 1024px) {
+      #root main { min-width: 0; }
+      #root main > .flex-1.overflow-y-auto { padding: 1.25rem !important; }
+      #root .overflow-x-auto { max-width: 100%; -webkit-overflow-scrolling: touch; }
+      #root table { min-width: 680px; }
+    }
+    @media (hover: none) {
+      #root button:hover { transform: none; }
+    }
+    @media print {
+      #root { min-height: 0 !important; }
+      body { min-width: 0 !important; }
+    }
+  </style>
+
+</head><body><h1>Data Pelanggan</h1><p>Tanggal cetak: " + escapeHtml(new Date().toLocaleDateString("id-ID")) + " · " + pelanggan.length + " pelanggan</p><table><thead><tr><th>ID</th><th>No Pelanggan</th><th>Nama</th><th>Wilayah</th><th>Alamat</th><th>Peran</th><th>Status Aktif</th></tr></thead><tbody>" + bodyRows + "</tbody></table><script>window.onload=function(){window.print();};<\\/script></body></html>");
       printWindow.document.close();
     };
     var handleDownloadExcelTemplate = function handleDownloadExcelTemplate() {
@@ -9289,9 +9349,18 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
 
           // Helper for Reports / Arrears
           const getTunggakanBulanSebelumnya = (pelId, periodeAktif) => {
-            return tagihan
-              .filter(t => t.pelangganId === pelId && t.periode < periodeAktif && t.status !== 'Lunas')
-              .reduce((sum, t) => sum + (t.total - (t.dibayar || 0)), 0); // Include partial payments deduction
+            // Tunggakan hanya sisa tagihan periode sebelum periode aktif.
+            // Nominal dibayar dikurangkan satu kali; tagihan lunas/kelebihan bayar tidak menambah tunggakan.
+            const customerKey = String(pelId ?? '');
+            return (Array.isArray(tagihan) ? tagihan : [])
+              .filter(t => String(t.pelangganId ?? t.idPelanggan ?? '') === customerKey
+                && String(t.periode || '') < String(periodeAktif || ''))
+              .reduce((sum, t) => {
+                const total = Math.max(0, Number(t.total) || 0);
+                const dibayar = Math.max(0, Number(t.dibayar) || 0);
+                const sisa = Math.max(0, total - dibayar);
+                return sum + sisa;
+              }, 0);
           };
 
           const getTagihanBulanIni = (pelId, periodeAktif) => {
