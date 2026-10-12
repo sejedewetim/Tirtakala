@@ -4613,7 +4613,7 @@ function TirtakalaApp() {
   useEffect(function () {
     localStorage.setItem('tirtakala-sidebar-minimized', String(isSidebarMinimized));
   }, [isSidebarMinimized]);
-  var _useState9 = useState('2026-08'),
+  var _useState9 = useState((function () { var d = new Date(); var p = new Date(d.getFullYear(), d.getMonth() - 1, 1); return ''.concat(p.getFullYear(), '-').concat(String(p.getMonth() + 1).padStart(2, '0')); })()),
     _useState0 = _slicedToArray(_useState9, 2),
     currentPeriode = _useState0[0],
     setCurrentPeriode = _useState0[1];
@@ -9019,6 +9019,37 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
         const pamSyncPublish = (patch) => { window.__tirtakalaSyncInfo = { ...(window.__tirtakalaSyncInfo || {}), ...patch }; window.dispatchEvent(new CustomEvent('tirtakala-sync-info')); };
         const PAM_SYNC_RULES = '{\n  "rules": {\n    "pamShared": {\n      ".read": "auth != null",\n      ".write": "auth != null"\n    }\n  }\n}';
 
+        function CurrentWIBClock() {
+          const formatWIB = () => {
+            const now = new Date();
+            const date = new Intl.DateTimeFormat('id-ID', {
+              timeZone: 'Asia/Jakarta', weekday: 'long', day: '2-digit',
+              month: 'long', year: 'numeric'
+            }).format(now);
+            const time = new Intl.DateTimeFormat('id-ID', {
+              timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit',
+              second: '2-digit', hourCycle: 'h23'
+            }).format(now);
+            return { date, time };
+          };
+          const [clock, setClock] = useState(formatWIB);
+          useEffect(() => {
+            const timer = window.setInterval(() => setClock(formatWIB()), 1000);
+            return () => window.clearInterval(timer);
+          }, []);
+          return (
+            <div
+              className="print:hidden flex min-w-0 flex-col justify-center rounded-lg border border-teal-100 bg-teal-50/80 px-3 py-1.5 text-left leading-tight"
+              aria-label={`Waktu Indonesia Barat: ${clock.date}, pukul ${clock.time}`}
+              title="Waktu Indonesia Barat (WIB)"
+            >
+              <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wide text-teal-700">Waktu WIB</span>
+              <span className="whitespace-nowrap text-[11px] sm:text-xs font-semibold text-slate-700">{clock.date}</span>
+              <span className="whitespace-nowrap text-xs sm:text-sm font-bold tabular-nums text-slate-900">{clock.time}</span>
+            </div>
+          );
+        }
+
         function SyncPanel({ floating = false }) {
           const [info, setInfo] = useState(window.__tirtakalaSyncInfo || { state: 'off' });
           const [user, setUser] = useState(null);
@@ -9154,7 +9185,8 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
               setCurrentUser(null);
             }
           }, [users]);
-          const [currentPeriode, setCurrentPeriode] = useState(savedAppState && typeof savedAppState.currentPeriode === 'string' ? savedAppState.currentPeriode : '2026-08');
+          const getDefaultActivePeriod = () => { const now = new Date(); const previous = new Date(now.getFullYear(), now.getMonth() - 1, 1); return `${previous.getFullYear()}-${String(previous.getMonth() + 1).padStart(2, '0')}`; };
+          const [currentPeriode, setCurrentPeriode] = useState(getDefaultActivePeriod);
 
           // Sticky Global Filter State for Wilayah
           const [globalWilayahFilter, setGlobalWilayahFilter] = useState(savedAppState && typeof savedAppState.globalWilayahFilter === 'string' ? savedAppState.globalWilayahFilter : 'all');
@@ -11101,7 +11133,7 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
                 if (!Array.isArray(customers) || !Array.isArray(data.meteran) || !Array.isArray(data.tunggakanAwal)) throw new Error('Bagian data utama tidak lengkap.');
                 const ids = new Set();
                 customers.forEach((customer, index) => { const id = identityKey(customer.idPelanggan || customer.id); const no = identityKey(customer.noPelanggan || customer.no); if (!id || ids.has(id)) throw new Error(`Record pelanggan ${index + 1}: ID kosong atau duplikat.`); ids.add(id); if (!no) throw new Error(`Record pelanggan ${index + 1}: No Pelanggan kosong.`); });
-                if (data.profilPAM) setProfilPAM(data.profilPAM); if (Array.isArray(data.wilayah)) setWilayah(data.wilayah); setPelanggan(customers); setMeteran(data.meteran); setTunggakanAwal(data.tunggakanAwal); setTunggakanAwalInitialized(Boolean(data.tunggakanAwalInitialized)); if (Array.isArray(data.tagihan)) setTagihan(data.tagihan); if (Array.isArray(data.tunggakanAwal)) { setTunggakanAwal(data.tunggakanAwal); setTunggakanAwalInitialized(Boolean(data.tunggakanAwalInitialized)); } if (Array.isArray(data.keuangan)) setKeuangan(data.keuangan); if (Array.isArray(data.users)) setUsers(data.users); if (Array.isArray(data.roles)) setRoles(data.roles); if (Array.isArray(data.auditLogData)) setAuditLogData(data.auditLogData); if (data.currentPeriode) setCurrentPeriode(data.currentPeriode); if (data.globalWilayahFilter) setGlobalWilayahFilter(data.globalWilayahFilter); if (data.localStorage && typeof data.localStorage === 'object') Object.entries(data.localStorage).forEach(([key, value]) => { if (typeof value === 'string') localStorage.setItem(key, value); }); document.body.dataset.reportPrintMode = data.reportPrintMode === 'landscape' ? 'landscape' : 'portrait';
+                if (data.profilPAM) setProfilPAM(data.profilPAM); if (Array.isArray(data.wilayah)) setWilayah(data.wilayah); setPelanggan(customers); setMeteran(data.meteran); setTunggakanAwal(data.tunggakanAwal); setTunggakanAwalInitialized(Boolean(data.tunggakanAwalInitialized)); if (Array.isArray(data.tagihan)) setTagihan(data.tagihan); if (Array.isArray(data.tunggakanAwal)) { setTunggakanAwal(data.tunggakanAwal); setTunggakanAwalInitialized(Boolean(data.tunggakanAwalInitialized)); } if (Array.isArray(data.keuangan)) setKeuangan(data.keuangan); if (Array.isArray(data.users)) setUsers(data.users); if (Array.isArray(data.roles)) setRoles(data.roles); if (Array.isArray(data.auditLogData)) setAuditLogData(data.auditLogData); if (data.globalWilayahFilter) setGlobalWilayahFilter(data.globalWilayahFilter); if (data.localStorage && typeof data.localStorage === 'object') Object.entries(data.localStorage).forEach(([key, value]) => { if (typeof value === 'string') localStorage.setItem(key, value); }); document.body.dataset.reportPrintMode = data.reportPrintMode === 'landscape' ? 'landscape' : 'portrait';
                 setRestoreJson(''); showNotification('Pemulihan backup selesai. Data dipulihkan tanpa membuat ulang ID.');
               } catch (error) { showNotification(`Backup ditolak: ${error.message}`, 'error'); }
             };
@@ -11799,7 +11831,8 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
                      <button type="button" className="text-slate-500 bg-slate-100 p-2 rounded-lg hover:bg-teal-50 focus:outline-none focus:ring-2 focus:ring-teal-500" onClick={() => { setIsSidebarMinimized(false); setIsMobileMenuOpen(true); }} aria-label="Tampilkan Sidebar" title="Tampilkan Sidebar"><Icon path={ICONS.home} /></button>
                      <h1 className="text-xl font-bold text-slate-800 font-serif hidden sm:block">{MENU_ITEMS.find(m => m.id === activeMenu)?.label}</h1>
                   </div>
-                  <div className="flex items-center gap-6">
+                  <div className="flex items-center justify-end gap-2 sm:gap-3 flex-wrap min-w-0">
+                     <CurrentWIBClock />
                      <SyncPanel />
                      <div className="flex items-center gap-3">
                         <p className="text-sm font-medium text-slate-500">Periode Aktif:</p>
