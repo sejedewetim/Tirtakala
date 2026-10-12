@@ -9349,20 +9349,18 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
 
           // Helper for Reports / Arrears
           const getTunggakanBulanSebelumnya = (pelId, periodeAktif) => {
-            // Tunggakan hanya sisa tagihan periode sebelum periode aktif.
-            // Nominal dibayar dikurangkan satu kali; tagihan lunas/kelebihan bayar tidak menambah tunggakan.
+            // Tunggakan bulan berjalan adalah sisa dari tagihan periode sebelumnya yang paling akhir.
+            // Karena total tagihan sebelumnya sudah memuat tunggakan awal dan tunggakan berjalan,
+            // cukup hitung total - pembayaran; jangan menambahkan tunggakan awal lagi.
             const customerKey = String(pelId ?? '');
-            return (Array.isArray(tagihan) ? tagihan : [])
-              .filter(t => String(t.pelangganId ?? t.idPelanggan ?? '') === customerKey
+            const previousBills = (Array.isArray(tagihan) ? tagihan : [])
+              .filter(t => String(t.pelangganId ?? t.idPelanggan ?? t.id_pelanggan ?? '') === customerKey
                 && String(t.periode || '') < String(periodeAktif || ''))
-              .reduce((sum, t) => {
-                const total = Math.max(0, Number(t.total) || 0);
-                const dibayar = Math.max(0, Number(t.dibayar) || 0);
-                // Tunggakan awal hanya dikenakan pada tagihan pertama dan tidak dibawa ke bulan berikutnya.
-                const tunggakanAwalPadaTagihan = Math.max(0, Number(t.tunggakanAwal) || 0);
-                const sisa = Math.max(0, total - dibayar - tunggakanAwalPadaTagihan);
-                return sum + sisa;
-              }, 0);
+              .sort((a, b) => String(a.periode || '').localeCompare(String(b.periode || '')));
+            const previousBill = previousBills.length ? previousBills[previousBills.length - 1] : null;
+            return previousBill
+              ? Math.max(0, (Number(previousBill.total) || 0) - (Number(previousBill.dibayar) || 0))
+              : 0;
           };
 
           const getTagihanBulanIni = (pelId, periodeAktif) => {
@@ -10446,7 +10444,7 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
                   const tariff = Number(area.tarif) || 0;
                   const fixedCharge = Number(area.biayaTetap) || 0;
                   const initialDebt = Number(tunggakanAwalInitialized ? (tunggakanAwal.find(row => identityKey(row.idPelanggan) === customerId && identityKey(row.noPelanggan) === identityKey(customerNo))?.nominal || 0) : 0);
-                  const priorDebt = existingBills.filter(row => identityKey(row.idPelanggan || row.id_pelanggan || row.pelangganId) === customerId && String(row.periode || '') < period).reduce((sum, row) => sum + Math.max(0, Number(row.total || 0) - Number(row.dibayar || 0) - Math.max(0, Number(row.tunggakanAwal || 0)), 0), 0);
+                  const priorDebt = (() => { const previous = existingBills.filter(row => identityKey(row.idPelanggan || row.id_pelanggan || row.pelangganId) === customerId && String(row.periode || '') < period).sort((a, b) => String(a.periode || '').localeCompare(String(b.periode || ''))); const last = previous[previous.length - 1]; return last ? Math.max(0, Number(last.total || 0) - Number(last.dibayar || 0)) : 0; })();
                   const debt = initialDebt + priorDebt;
                   const waterCharge = usage * tariff;
                   const total = waterCharge + fixedCharge + debt;
@@ -10516,7 +10514,7 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
                   if (!area) { issues.push({ id, no: customerNo, name: customer.nama, period, input: `${awal} → ${akhir}`, reason: 'Wilayah atau tarif pelanggan tidak ditemukan; tagihan tidak diubah.' }); return; }
                   const tariff = Number(area.tarif ?? 500);
                   const fixed = Number(area.biayaTetap ?? (String(area.kode).toUpperCase() === 'JS' ? 2000 : 1000));
-                  const prior = nextBills.filter(bill => identityKey(bill.idPelanggan || bill.id_pelanggan || bill.pelangganId) === id && String(bill.periode || '') < period).reduce((sum, bill) => sum + Math.max(0, Number(bill.total || 0) - Number(bill.dibayar || 0) - Math.max(0, Number(bill.tunggakanAwal || 0)), 0), 0);
+                  const prior = (() => { const previous = nextBills.filter(bill => identityKey(bill.idPelanggan || bill.id_pelanggan || bill.pelangganId) === id && String(bill.periode || '') < period).sort((a, b) => String(a.periode || '').localeCompare(String(b.periode || ''))); const last = previous[previous.length - 1]; return last ? Math.max(0, Number(last.total || 0) - Number(last.dibayar || 0)) : 0; })();
                   const firstPeriod = nextBills.filter(bill => identityKey(bill.idPelanggan || bill.id_pelanggan || bill.pelangganId) === id && String(bill.periode || '') < period).length === 0;
                   const opening = firstPeriod && tunggakanAwalInitialized ? Number(tunggakanAwal.find(row => identityKey(row.idPelanggan) === id && identityKey(row.noPelanggan) === identityKey(customerNo))?.nominal || 0) : 0;
                   const usage = akhir - awal;
@@ -11579,7 +11577,7 @@ root.render(/*#__PURE__*/React.createElement(TirtakalaApp, null));
                   const tariff = Number(area.tarif ?? 500);
                   const fixed = Number(area.biayaTetap ?? (String(area.kode).toUpperCase() === 'JS' ? 2000 : 1000));
                   const usage = akhir - awal;
-                  const prior = nextBills.filter(bill => identityKey(bill.idPelanggan || bill.id_pelanggan || bill.pelangganId) === identityKey(customerId) && String(bill.periode || '') < period).reduce((sum,bill) => sum + Math.max(0, Number(bill.total || 0) - Number(bill.dibayar || 0) - Math.max(0, Number(bill.tunggakanAwal || 0)), 0), 0);
+                  const prior = (() => { const previous = nextBills.filter(bill => identityKey(bill.idPelanggan || bill.id_pelanggan || bill.pelangganId) === identityKey(customerId) && String(bill.periode || '') < period).sort((a, b) => String(a.periode || '').localeCompare(String(b.periode || ''))); const last = previous[previous.length - 1]; return last ? Math.max(0, Number(last.total || 0) - Number(last.dibayar || 0)) : 0; })();
                   const firstPeriod = nextBills.filter(bill => identityKey(bill.idPelanggan || bill.id_pelanggan || bill.pelangganId) === identityKey(customerId) && String(bill.periode || '') < period).length === 0;
                   const opening = firstPeriod && tunggakanAwalInitialized ? Number(tunggakanAwal.find(row => identityKey(row.idPelanggan) === identityKey(customerId) && identityKey(row.noPelanggan) === identityKey(customerNo))?.nominal || 0) : 0;
                   const total = usage * tariff + fixed + prior + opening;
